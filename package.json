@@ -1,0 +1,23 @@
+{
+  "name": "mapaitd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx serve public",
+    "build": "echo \"No build step required - serving from public\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sachin-R-star/mapAITD.git"
+  },
+  "author": "Sachin Rajput",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sachin-R-star/mapAITD/issues"
+  },
+  "homepage": "https://Sachin-R-star.github.io/mapAITD",
+  "dependencies": {
+    "gh-pages": "^3.2.3"
+  }
+}
