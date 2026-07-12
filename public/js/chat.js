@@ -170,7 +170,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'bypass-tunnel-reminder': 'true'
                 },
                 body: JSON.stringify({
                     message: messageText,
