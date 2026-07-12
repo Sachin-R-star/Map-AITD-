@@ -51,6 +51,8 @@ function clearAll() {
     document.getElementById("destInput").value = "";
     sourceIndex = -1;
     destIndex = -1;
+    const tf = document.querySelector(".textFields");
+    if (tf) tf.classList.remove("route-active");
 }
 
 function addLinesAndMarkers(route) {
@@ -121,6 +123,8 @@ function addLinesAndMarkers(route) {
     }).join("");
 
     document.getElementById("routeInfo").classList.remove("closed");
+    const tf = document.querySelector(".textFields");
+    if (tf) tf.classList.add("route-active");
 }
 
 // --- ROUTING ALGORITHM (BELLMAN-FORD) ---
@@ -171,6 +175,7 @@ function bellmanFord(src, dest) {
 document.getElementById("searchBtn").addEventListener("click", () => bellmanFord(sourceIndex, destIndex));
 document.getElementById("clearBtn").addEventListener("click", clearAll);
 document.getElementById("startNav").addEventListener("click", () => startNavigation(currentRoute));
+document.getElementById("routeClearBtn").addEventListener("click", clearAll);
 
 // --- AUTOCOMPLETE UI ---
 function autocomplete(inp, arr) {
@@ -262,7 +267,9 @@ function autocomplete(inp, arr) {
     function closeAllLists(elmnt) {
         var x = document.getElementsByClassName("autocomplete-items");
         for (var i = 0; i < x.length; i++) {
-            if (elmnt != x[i] && elmnt != inp) x[i].parentNode.removeChild(x[i]);
+            if (elmnt != x[i] && elmnt != inp && !x[i].contains(elmnt)) {
+                x[i].parentNode.removeChild(x[i]);
+            }
         }
     }
     
@@ -417,14 +424,14 @@ document.getElementById('locationsToggle').addEventListener('click', function() 
     if (!listDiv.classList.contains('closed')) {
         this.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            Close Directory
+            Close Directory / निर्देशिका बंद करें
         `;
         populateLocationsList();
         document.getElementById('locationsSearch').focus();
     } else {
         this.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-            Explore Directory
+            Explore Directory / निर्देशिका देखें
         `;
         document.getElementById('locationsSearch').value = '';
     }
@@ -435,44 +442,86 @@ document.getElementById('locationsSearch').addEventListener('input', function() 
     populateLocationsList(this.value);
 });
 
-// --- AI ASSISTANT INTEGRATION ---
-const ELEVEN_LABS_AGENT_URL = 'https://elevenlabs.io/app/talk-to?agent_id=agent_2101k5pdrqbeej1syq9ksw4ptfj4&branch_id=agtbrch_0501ks18pfzfe9arg4cjs7qkc5x4';
+// --- AI ASSISTANT INITIALIZATION ---
+// Chatbot drawer behaviors and events are handled in chat.js
 
-// Modal functionality
-const modal = document.getElementById('aiInfoModal');
-const aiInfoBtn = document.getElementById('aiInfoBtn');
-const closeBtn = document.querySelector('.close-btn');
-const openAIBtn = document.getElementById('openAIBtn');
+// --- GPS GEOLOCATION FEATURE ---
+const gpsBtn = document.getElementById("gpsBtn");
+let userGPSMarker = null;
 
-// Open modal when info button is clicked
-aiInfoBtn.addEventListener('click', function() {
-    modal.classList.remove('closed');
-});
+if (gpsBtn) {
+    gpsBtn.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by your browser.");
+            return;
+        }
 
-// Close modal when close button is clicked
-closeBtn.addEventListener('click', function() {
-    modal.classList.add('closed');
-});
+        gpsBtn.innerText = "⏳";
 
-// Close modal when clicking outside the modal content
-window.addEventListener('click', function(event) {
-    if (event.target === modal) {
-        modal.classList.add('closed');
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+
+                // Find the closest node in AITD locations list
+                let closestIndex = -1;
+                let minDistance = Number.MAX_VALUE;
+
+                for (let i = 0; i < locations.length; i++) {
+                    const loc = locations[i];
+                    const dist = calcCrowDist(userLat, userLng, loc.x, loc.y);
+                    if (dist < minDistance) {
+                        minDistance = dist;
+                        closestIndex = i;
+                    }
+                }
+
+                if (closestIndex !== -1) {
+                    const closestLoc = locations[closestIndex];
+                    const label = closestLoc.displayName || closestLoc.name;
+                    
+                    document.getElementById("sourceInput").value = `My Location (${label})`;
+                    sourceIndex = closestIndex;
+                    
+                    // Show marker for current user GPS location on Leaflet map
+                    showUserGPSMarker(userLat, userLng);
+                    
+                    // If destination is already set, auto-run Bellman-Ford routing!
+                    if (destIndex !== -1) {
+                        bellmanFord(sourceIndex, destIndex);
+                    } else {
+                        mymap.setView([userLat, userLng], 18);
+                    }
+                }
+
+                gpsBtn.innerText = "🎯";
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+                alert("Unable to retrieve your location. Please make sure location services/GPS are enabled on your device.");
+                gpsBtn.innerText = "🎯";
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            }
+        );
+    });
+}
+
+function showUserGPSMarker(lat, lng) {
+    if (userGPSMarker) {
+        mymap.removeLayer(userGPSMarker);
     }
-});
+    
+    // A blue glowing dot for user GPS location
+    const gpsIcon = L.divIcon({
+        className: 'user-gps-dot',
+        iconSize: [20, 20]
+    });
+    
+    userGPSMarker = L.marker([lat, lng], { icon: gpsIcon }).addTo(mymap);
+    userGPSMarker.bindPopup("You are here (GPS)");
+}
 
-// Button in sidebar
-document.getElementById('aiAssistantBtn').addEventListener('click', function() {
-    window.open(ELEVEN_LABS_AGENT_URL, 'AI Assistant', 'width=600,height=700,left=100,top=100');
-});
-
-// Open AI from modal button
-openAIBtn.addEventListener('click', function() {
-    modal.classList.add('closed');
-    window.open(ELEVEN_LABS_AGENT_URL, 'AI Assistant', 'width=600,height=700,left=100,top=100');
-});
-
-// Floating chat widget button
-document.getElementById('floatingChatBtn').addEventListener('click', function() {
-    window.open(ELEVEN_LABS_AGENT_URL, 'AI Assistant', 'width=600,height=700,left=100,top=100');
-});

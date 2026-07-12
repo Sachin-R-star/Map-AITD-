@@ -24,6 +24,8 @@ function getFriendlyNodeName(loc) {
 }
 
 // --- VOICE & NAVIGATION LOGIC ---
+var watchId = null;
+
 function startNavigation(route) {
     if (!route || route.length < 2) return;
     stopNavigation(); // Stop any ongoing navigation
@@ -32,13 +34,45 @@ function startNavigation(route) {
     let arrowIcon = L.divIcon({ className: 'navigation-arrow', iconSize: [32, 32] });
     navigationArrow = L.marker([startPoint.x, startPoint.y], { icon: arrowIcon, rotationAngle: 0, zIndexOffset: 1000 }).addTo(mymap);
 
-    // Speak directions
-    speakDirections(generateDirections(route));
-    simulateMovement(route);
+    // Speak initial directions
+    const directionsList = generateDirections(route);
+    speakDirections(directionsList);
+
+    // Check if GPS is available and if the user is on/near AITD Kanpur campus
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+                
+                // Calculate distance to AITD campus center (Gate 1)
+                const distToCampus = calcCrowDist(userLat, userLng, 26.49975, 80.27443);
+                
+                if (distToCampus < 1000) { // On/near campus (within 1km)
+                    console.log("User is on AITD campus. Enabling Real-Time GPS Tracking.");
+                    startGPSTracking(route);
+                } else { // Testing remotely (e.g. from home)
+                    console.log("User is far from campus. Starting Simulated Navigation mode.");
+                    alert("You are far from the AITD Kanpur campus (testing from home/remote location). Starting Simulated Walkthrough mode...");
+                    simulateMovement(route);
+                }
+            },
+            (error) => {
+                console.warn("Geolocation failed. Starting Simulated Navigation mode.", error);
+                simulateMovement(route);
+            },
+            { enableHighAccuracy: true, timeout: 3000, maximumAge: 0 }
+        );
+    } else {
+        simulateMovement(route);
+    }
 }
 
 function stopNavigation() {
     if (navigationInterval) clearInterval(navigationInterval);
+    if (watchId !== null && navigator.geolocation) {
+        navigator.geolocation.clearWatch(watchId);
+    }
     if (navigationArrow) mymap.removeLayer(navigationArrow);
     
     // Stop any speech that is currently happening
@@ -48,12 +82,74 @@ function stopNavigation() {
 
     navigationArrow = null;
     navigationInterval = null;
+    watchId = null;
+}
+
+function startGPSTracking(route) {
+    if (!navigator.geolocation) return;
+
+    let announcedNodes = new Set();
+
+    watchId = navigator.geolocation.watchPosition(
+        (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            
+            // Update GPS tracking arrow position on map
+            navigationArrow.setLatLng([lat, lng]);
+            mymap.panTo([lat, lng]);
+
+            // Find closest node on route
+            let closestNodeIdx = 0;
+            let minNodeDist = Number.MAX_VALUE;
+            
+            for (let i = 0; i < route.length; i++) {
+                const loc = locations[route[i]];
+                const d = calcCrowDist(lat, lng, loc.x, loc.y);
+                if (d < minNodeDist) {
+                    minNodeDist = d;
+                    closestNodeIdx = i;
+                }
+            }
+
+            // Update direction bearing angle to next node
+            if (closestNodeIdx < route.length - 1) {
+                const nextNode = locations[route[closestNodeIdx + 1]];
+                const userPos = { x: lat, y: lng };
+                const bearing = getBearing(userPos, nextNode);
+                navigationArrow.setRotationAngle(bearing);
+
+                // Proximity Trigger: If user is within 6 meters of the current target node
+                // Speak the instructions for the next leg of the journey
+                const currentTarget = locations[route[closestNodeIdx]];
+                const distToTarget = calcCrowDist(lat, lng, currentTarget.x, currentTarget.y);
+                
+                if (distToTarget < 6 && !announcedNodes.has(closestNodeIdx)) {
+                    announcedNodes.add(closestNodeIdx);
+                    const nextInstruction = `Arrived at ${getFriendlyNodeName(currentTarget)}.`;
+                    speakDirections([nextInstruction]);
+                }
+            } else {
+                // Arrived at destination
+                speakDirections(["You have arrived at your destination!"]);
+                stopNavigation();
+            }
+        },
+        (error) => {
+            console.error("GPS Tracking Error:", error);
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+        }
+    );
 }
 
 function simulateMovement(route) {
     let routeIndex = 0;
     let progress = 0; // Progress along the current leg of the journey (0 to 1)
-    const speed = 0.015; // Controls how fast the simulation runs (slightly adjusted for smoothness)
+    const speed = 0.015; // Controls how fast the simulation runs
 
     navigationInterval = setInterval(() => {
         if (routeIndex >= route.length - 1) {

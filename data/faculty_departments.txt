@@ -1,0 +1,23 @@
+=== AITD FACULTY & DEPARTMENT HEADS (HODs) ===
+
+- Computer Science & Engineering (CSE) & Information Technology (IT) Department:
+  * HOD Name: Dr. Shrinath Dwivedi (डॉ. श्रीनाथ द्विवेदी).
+  * Designation: Professor & Head of Department.
+  * Office Location: F-Block, CSE & IT Department.
+  * Description: Highly experienced, student-friendly professor who coordinates academic and accessibility support for disabled students in the computer departments.
+
+- Electronics Engineering Department:
+  * HOD Name: Dr. Rachna Asthana (or current head).
+  * Office Location: Electronics Department building.
+
+- Chemical Engineering & Biotechnology Department:
+  * HOD Name: Dr. Arun Kumar (or current head).
+  * Office Location: Chemical & Biotech block.
+
+- Paint Technology Department:
+  * HOD Name: Dr. Pramod Kumar (or current head).
+  * Office Location: Paint Tech Block.
+
+- Food Technology Department:
+  * HOD Name: Dr. IP Singh (or current head).
+  * Office Location: Food Tech Block.
