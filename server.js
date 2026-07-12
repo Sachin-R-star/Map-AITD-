@@ -3,7 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenAI } = require('@google/genai');
 
 // Load environment variables
 dotenv.config();
@@ -110,7 +110,7 @@ const apiKey = process.env.GEMINI_API_KEY;
 let genAI = null;
 
 if (apiKey) {
-    genAI = new GoogleGenerativeAI(apiKey);
+    genAI = new GoogleGenAI({ apiKey });
 } else {
     console.warn("WARNING: GEMINI_API_KEY is not defined. AI Chatbot will run in mock mode.");
 }
@@ -187,43 +187,54 @@ ${ragContextInstruction}
 Keep responses direct and get straight to the point. Do not write long greeting headers in every reply.
 `;
 
-        const model = genAI.getGenerativeModel({ 
-            model: "gemini-3.1-flash-lite",
-            systemInstruction: systemInstruction
+        // Format history for new @google/genai SDK
+        const formattedContents = [];
+
+        // Add history messages
+        for (const msg of (history || [])) {
+            formattedContents.push({
+                role: msg.role === 'user' ? 'user' : 'model',
+                parts: [{ text: msg.text }]
+            });
+        }
+
+        // Add current user message
+        formattedContents.push({
+            role: 'user',
+            parts: [{ text: message }]
         });
 
-        // Format history for Gemini API
-        const formattedHistory = (history || []).map(msg => ({
-            role: msg.role === 'user' ? 'user' : 'model',
-            parts: [{ text: msg.text }]
-        }));
-
-        const chat = model.startChat({
-            history: formattedHistory,
-            generationConfig: {
+        const resultStream = await genAI.models.generateContentStream({
+            model: 'gemini-2.0-flash-lite',
+            contents: formattedContents,
+            config: {
                 maxOutputTokens: 2000,
+                systemInstruction: systemInstruction
             }
         });
 
-        const resultStream = await chat.sendMessageStream(message);
-        
-        for await (const chunk of resultStream.stream) {
-            const chunkText = chunk.text();
-            // Send chunk formatted as SSE event data
-            res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
+        for await (const chunk of resultStream) {
+            const chunkText = chunk.text;
+            if (chunkText) {
+                // Send chunk formatted as SSE event data
+                res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
+            }
         }
-        
+
         // Signal stream completion using standard SSE [DONE] message
         res.write("event: end\ndata: [DONE]\n\n");
         res.end();
 
     } catch (error) {
         console.error("Gemini API Streaming Error:", error);
-        // If headers weren't sent yet, we can send a 500 status. Otherwise end the stream.
+        const errorMessage = error.message || "Unknown error";
+        // If headers weren't sent yet, send a 500 JSON response
         if (!res.headersSent) {
-            res.status(500).write("Failed to communicate with AI model.");
+            res.status(500).json({ error: "Failed to communicate with AI model.", details: errorMessage });
         } else {
-            res.write("\n[System Error: Connection disrupted]");
+            // Send error as SSE event so the frontend can display it
+            res.write(`data: ${JSON.stringify({ text: "\n\n⚠️ सर्वर एरर: AI से जुड़ने में समस्या हुई। कृपया थोड़ी देर बाद फिर कोशिश करें।" })}\n\n`);
+            res.write("event: end\ndata: [DONE]\n\n");
         }
         res.end();
     }

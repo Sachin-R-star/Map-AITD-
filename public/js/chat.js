@@ -272,7 +272,10 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error("Chat error:", error);
             removeTypingIndicator(typingIndicator);
-            appendMessageBubble('bot', "कनेक्शन एरर। कृपया सुनिश्चित करें कि आपका सर्वर चालू है और इंटरनेट कनेक्टेड है।");
+            const errMsg = error.message && error.message.includes('Failed to fetch')
+                ? "⚠️ सर्वर से कनेक्ट नहीं हो पाया। कृपया सुनिश्चित करें कि सर्वर चालू है (npm start)।"
+                : "⚠️ AI से जुड़ने में समस्या हुई। कृपया अपना इंटरनेट कनेक्शन जाँचें और फिर कोशिश करें।";
+            appendMessageBubble('bot', errMsg);
         }
     }
 
