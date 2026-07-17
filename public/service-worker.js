@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mapaitd-v1';
+const CACHE_NAME = 'mapaitd-v3';
 const ASSETS_TO_CACHE = [
   './index.html',
   './css/style.css',
@@ -49,6 +49,20 @@ self.addEventListener('fetch', event => {
   }
   if (event.request.url.includes('/api/chat')) {
     return; // Don't cache chat requests, always fetch from server
+  }
+  if (event.request.url.includes('/js/chat.js')) {
+    // Network first for chat.js to avoid stale cache issues during live presentation
+    event.respondWith(
+      fetch(event.request)
+        .then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200) {
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, networkResponse.clone()));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
   }
 
   event.respondWith(
