@@ -142,29 +142,29 @@ function isHindi(text) {
 // Local bilingual facts database for chatbot fallback
 const localFacts = [
     {
-        keywords: ['fee', 'fees', 'structure', 'charge', 'charges', 'hostel fee', 'mess', 'tuition', 'scholarship', 'scholarships', 'reimbursement', 'payment', 'paisa', 'rupay', 'rupee', 'rupees', 'kharch', 'kharcha', 'scholar', 'up scholarship', 'nsp'],
-        english: `### AITD B.Tech Fee Structure:\n- **Tuition Fees**: ₹65,000 per year.\n- **Development Fees**: ₹10,000 per year.\n- **Library & Lab Charges**: ₹5,000 per year.\n- **Other Institutional Fees**: ₹7,800 per year.\n- **Total Institutional Fees**: ₹87,800 per year (excluding hostel and examination fees).\n- **Hostel Fees**: ₹15,000 per year (lodging, electricity, basic water).\n- **Mess Charges**: Approx. ₹3,000 per month (cooperative mess expenses).\n- **Examination Fees**: ₹7,500 per year.\n- **Scholarships**: Reserved category and Divyangjan students can apply for the UP State Scholarship and National Scholarship Portal (NSP) for full reimbursement of fees (family income ≤ ₹2,00,000 per year).`,
-        hindi: `### AITD बी.टेक फीस संरचना:\n- **ट्यूशन फीस**: ₹65,000 प्रति वर्ष।\n- **विकास शुल्क**: ₹10,000 प्रति वर्ष।\n- **लाइब्रेरी और लैब शुल्क**: ₹5,000 प्रति वर्ष।\n- **अन्य संस्थागत शुल्क**: ₹7,800 प्रति वर्ष।\n- **कुल संस्थागत फीस**: ₹87,800 प्रति वर्ष (हॉस्टल और परीक्षा शुल्क को छोड़कर)।\n- **हॉस्टल फीस**: ₹15,000 प्रति वर्ष (आवास, बिजली, बुनियादी पानी)।\n- **मेस शुल्क**: लगभग ₹3,000 प्रति माह।\n- **परीक्षा शुल्क**: ₹7,500 प्रति वर्ष।\n- **छात्रवृत्ति (Scholarships)**: यूपी राज्य छात्रवृत्ति (UP Scholarship) और राष्ट्रीय छात्रवृत्ति पोर्टल (NSP) के तहत सभी पात्र दिव्यांग छात्रों को संस्थागत फीस की पूर्ण प्रतिपूर्ति (रिफंड) मिल सकती है (पारिवारिक वार्षिक आय ≤ ₹2,00,000 होनी चाहिए)।`
+        keywords: ['fee', 'fees', 'hostel fee', 'mess fee', 'tuition', 'scholarship', 'scholarships', 'reimbursement', 'up scholarship', 'nsp'],
+        english: `### AITD B.Tech Fee Structure:\n- **Tuition Fees**: ₹65,000 per year.\n- **Development Fees**: ₹10,000 per year.\n- **Library & Lab Charges**: ₹5,000 per year.\n- **Other Institutional Fees**: ₹7,800 per year.\n- **Total Institutional Fees**: ₹87,800 per year (excluding hostel and examination fees).\n- **Hostel Fees**: ₹15,000 per year (lodging, electricity, basic water).\n- **Mess Charges**: Approx. ₹3,000 per month (cooperative mess expenses).\n- **Examination Fees**: ₹7,500 per year.\n- **Scholarships**: Reserved category and Divyangjan students can apply for the UP State Scholarship and National Scholarship Portal (NSP) for full reimbursement of fees (family income ≤ ₹2,00,000 per year).\n- **Enquiries**: For fee payments and receipts, visit the Accountant Section in the Main Academic Building.`,
+        hindi: `### AITD बी.टेक फीस संरचना:\n- **ट्यूशन फीस**: ₹65,000 प्रति वर्ष।\n- **विकास शुल्क**: ₹10,000 प्रति वर्ष।\n- **लाइब्रेरी और लैब शुल्क**: ₹5,000 प्रति वर्ष।\n- **अन्य संस्थागत शुल्क**: ₹7,800 प्रति वर्ष।\n- **कुल संस्थागत फीस**: ₹87,800 प्रति वर्ष (हॉस्टल और परीक्षा शुल्क को छोड़कर)।\n- **हॉस्टल फीस**: ₹15,000 प्रति वर्ष (आवास, बिजली, बुनियादी पानी)।\n- **मेस शुल्क**: लगभग ₹3,000 प्रति माह।\n- **परीक्षा शुल्क**: ₹7,500 प्रति वर्ष।\n- **छात्रवृत्ति (Scholarships)**: यूपी राज्य छात्रवृत्ति (UP Scholarship) और राष्ट्रीय छात्रवृत्ति पोर्टल (NSP) के तहत सभी पात्र दिव्यांग छात्रों को संस्थागत फीस की पूर्ण प्रतिपूर्ति (रिफंड) मिल सकती है (पारिवारिक वार्षिक आय ≤ ₹2,00,000 होनी चाहिए)।\n- **पूछताछ**: फीस जमा करने या रसीद प्राप्त करने के लिए आप Main Academic Building में Accountant Section (लेखा विभाग) जा सकते हैं।`
     },
     {
-        keywords: ['department', 'departments', 'branch', 'branches', 'cse', 'it', 'computer science', 'electronics', 'chemical', 'biotech', 'biotechnology', 'paint', 'food', 'civil', 'mechanical', 'block', 'nba', 'accredited', 'accridited', 'seat', 'seats', 'resrvation'],
-        english: `### AITD B.Tech Departments & Admissions:\n1. **Computer Science & Engineering (CSE)** - Located in F-Block.\n2. **Information Technology (IT)** - Located in F-Block.\n3. **Electronics Engineering** - NBA Accredited.\n4. **Chemical Engineering** - Located in the Chemical & Biotech block.\n5. **Biotechnology** - Located near the chemical department.\n6. **Paint Technology** - Specialized branch.\n7. **Food Technology** - Specialized branch.\n8. **Civil Engineering**\n9. **Mechanical Engineering**\n\n*Note*: 60% of B.Tech seats are reserved specifically for physically challenged (Divyangjan) candidates. There are also specialized Diploma courses designed for disabled students.`,
-        hindi: `### AITD बी.टेक विभाग (Departments) और प्रवेश:\n1. **कंप्यूटर साइंस एंड इंजीनियरिंग (CSE)** - F-Block में स्थित है।\n2. **इन्फॉर्मेशन टेक्नोलॉजी (IT)** - F-Block में स्थित है।\n3. **इलेक्ट्रॉनिक्स इंजीनियरिंग** - NBA मान्यता प्राप्त।\n4. **केमिकल इंजीनियरिंग** - केमिकल और बायोटेक ब्लॉक में।\n5. **बायोटेक्नोलॉजी** - केमिकल विभाग के पास।\n6. **पेंट टेक्नोलॉजी** - विशिष्ट शाखा।\n7. **खाद्य प्रौद्योगिकी (Food Tech)** - विशिष्ट शाखा।\n8. **सिविल इंजीनियरिंग**\n9. **मैनेजमेंट/मैकेनिकल इंजीनियरिंग**\n\n*विशेष टिप्पणी*: बी.टेक की 60% सीटें विशेष रूप से दिव्यांग (physically challenged) उम्मीदवारों के लिए आरक्षित हैं। दिव्यांग छात्रों के लिए विशेष डिप्लोमा पाठ्यक्रम भी उपलब्ध हैं।`
+        keywords: ['department', 'departments', 'branch', 'branches', 'cse', 'it', 'computer science', 'electronics', 'chemical', 'biotech', 'biotechnology', 'paint technology', 'food technology', 'civil engineering', 'mechanical engineering'],
+        english: `### AITD B.Tech Departments & Admissions:\n1. **Computer Science & Engineering (CSE)** - HOD office located in F-Block (CSE & IT).\n2. **Information Technology (IT)** - HOD office located in F-Block (CSE & IT).\n3. **Electronics Engineering** - Located in the Electronics Dept (NBA Accredited).\n4. **Chemical Engineering** - Located in the Chemical & Biotech Dept block.\n5. **Biotechnology** - Located in the Chemical & Biotech Dept block.\n6. **Paint Technology** - Located in the Paint Technology Dept block.\n7. **Food Technology** - Located in the Food Technology Dept block.\n8. **Civil Engineering** - Located in the Civil Dept block.\n9. **Mechanical Engineering** - Workshops located in the Mechanical Lab and Central Workshop.\n\n*Note*: 60% of B.Tech seats are reserved specifically for physically challenged (Divyangjan) candidates in the Administrative Block admission cell. There are also specialized Diploma courses designed for disabled students.`,
+        hindi: `### AITD बी.टेक विभाग (Departments) और प्रवेश:\n1. **कंप्यूटर साइंस एंड इंजीनियरिंग (CSE)** - HOD कार्यालय F-Block (CSE & IT) में स्थित है।\n2. **इन्फॉर्मेशन टेक्नोलॉजी (IT)** - HOD कार्यालय F-Block (CSE & IT) में स्थित है।\n3. **इलेक्ट्रॉनिक्स इंजीनियरिंग** - Electronics Dept (NBA Accredited) में स्थित है।\n4. **केमिकल इंजीनियरिंग** - Chemical & Biotech Dept ब्लॉक में स्थित है।\n5. **बायोटेक्नोलॉजी** - Chemical & Biotech Dept ब्लॉक में स्थित है।\n6. **पेंट टेक्नोलॉजी** - Paint Technology Dept ब्लॉक में स्थित है।\n7. **खाद्य प्रौद्योगिकी (Food Tech)** - Food Technology Dept ब्लॉक में स्थित है।\n8. **सिविल इंजीनियरिंग** - Civil Dept ब्लॉक में स्थित है।\n9. **मैकेनिक इंजीनियरिंग** - कार्यशालाएं Mechanical Lab और Central Workshop में हैं।\n\n*विशेष टिप्पणी*: Administrative Block प्रवेश सेल में बी.टेक की 60% सीटें विशेष रूप से दिव्यांग (physically challenged) उम्मीदवारों के लिए आरक्षित हैं। दिव्यांगों के लिए विशेष डिप्लोमा पाठ्यक्रम भी उपलब्ध हैं।`
     },
     {
-        keywords: ['scribe', 'writer', 'reader', 'exam', 'exams', 'aktu', 'paper', 'helper', 'disability certificate', 'extra time', 'medical certificate', 'rules', 'rule', 'cmo'],
-        english: `### AITD Scribe/Writer Rules for Exams:\n1. **Eligibility**: Students with >40% writing limb disability, visual impairment, or temporary arm injuries are eligible to avail a scribe/reader during AKTU exams.\n2. **Qualification**: Scribe must be one academic grade lower than the candidate and from a different department/branch (e.g., a 1st year CSE student cannot write for a 2nd year CSE student, but can write for a 2nd year IT student).\n3. **Extra Time**: Candidates using a scribe get an **extra 20 minutes per hour** (e.g., 60 minutes extra for a 3-hour exam).\n4. **Procedure**: Submit an application to the Controller of Examinations (COE) along with a valid CMO Medical Disability Certificate and Scribe ID proof at least 7 days before exams start.`,
-        hindi: `### परीक्षाओं के लिए लेखक/स्क्राइब (Scribe) नियम:\n1. **पात्रता**: लिखने वाले अंगों में 40% से अधिक दिव्यांगता वाले छात्र, दृष्टिबाधित छात्र, या हाथ की अस्थायी चोट वाले छात्र परीक्षा में लेखक/स्क्राइब का लाभ ले सकते हैं।\n2. **योग्यता**: स्क्राइब उम्मीदवार से एक शैक्षणिक वर्ष नीचे होना चाहिए और एक ही विभाग/शाखा से नहीं होना चाहिए (जैसे, प्रथम वर्ष का छात्र द्वितीय वर्ष के छात्र के लिए लिख सकता है)।\n3. **अतिरिक्त समय**: स्क्राइब का उपयोग करने वाले उम्मीदवारों को परीक्षा अवधि के प्रति घंटे **20 मिनट का अतिरिक्त समय** मिलता है (जैसे, 3 घंटे की परीक्षा के लिए 60 मिनट अतिरिक्त)।\n4. **प्रक्रिया**: परीक्षा शुरू होने से कम से कम 7 दिन पहले मुख्य चिकित्सा अधिकारी (CMO) के दिव्यांगता प्रमाण पत्र और स्क्राइब के पहचान पत्र के साथ परीक्षा नियंत्रक (COE) को आवेदन जमा करें।`
+        keywords: ['scribe', 'writer', 'reader', 'aktu exam', 'aktu exams', 'exam writer', 'exam scribe', 'extra time', 'disability certificate', 'medical certificate', 'cmo certificate'],
+        english: `### AITD Scribe/Writer Rules for Exams:\n1. **Eligibility**: Students with >40% writing limb disability, visual impairment, or temporary arm injuries are eligible to avail a scribe/reader during AKTU exams.\n2. **Qualification**: Scribe must be one academic grade lower than the candidate and from a different department/branch (e.g., a 1st year CSE student cannot write for a 2nd year CSE student, but can write for a 2nd year IT student).\n3. **Extra Time**: Candidates using a scribe get an **extra 20 minutes per hour** (e.g., 60 minutes extra for a 3-hour exam).\n4. **Procedure**: Submit an application to the Controller of Examinations (COE) at the Administrative Block along with a valid CMO Medical Disability Certificate and Scribe ID proof at least 7 days before exams start.`,
+        hindi: `### परीक्षाओं के लिए लेखक/स्क्राइब (Scribe) नियम:\n1. **पात्रता**: लिखने वाले अंगों में 40% से अधिक दिव्यांगता वाले छात्र, दृष्टिबाधित छात्र, या हाथ की अस्थायी चोट वाले छात्र परीक्षा में लेखक/स्क्राइब का लाभ ले सकते हैं।\n2. **योग्यता**: स्क्राइब उम्मीदवार से एक शैक्षणिक वर्ष नीचे होना चाहिए और एक ही विभाग/शाखा से नहीं होना चाहिए (जैसे, प्रथम वर्ष का छात्र द्वितीय वर्ष के छात्र के लिए लिख सकता है)।\n3. **अतिरिक्त समय**: स्क्राइब का उपयोग करने वाले उम्मीदवारों को परीक्षा अवधि के प्रति घंटे **20 मिनट का अतिरिक्त समय** मिलता है (जैसे, 3 घंटे की परीक्षा के लिए 60 मिनट अतिरिक्त)।\n4. **प्रक्रिया**: परीक्षा शुरू होने से कम से कम 7 दिन पहले मुख्य चिकित्सा अधिकारी (CMO) के दिव्यांगता प्रमाण पत्र और स्क्राइब के पहचान पत्र के साथ Administrative Block में परीक्षा नियंत्रक (COE) को आवेदन जमा करें।`
     },
     {
-        keywords: ['accessibility', 'amenity', 'amenities', 'ramp', 'ramps', 'lift', 'lifts', 'elevator', 'wheelchair', 'accessible', 'barrier-free', 'facility', 'toilet', 'washroom', 'grab rails', 'tactile flooring'],
-        english: `### Accessibility & Amenities for Divyangjan:\n- **Ramps**: Installed at the entrance of all academic blocks, hostels, and libraries to ensure barrier-free movement.\n- **Lifts/Elevators**: Installed in the Main Academic Building to access upper floor classrooms and computer labs.\n- **Accessible Classrooms**: Wheelchair-friendly rooms with low-height writing desks.\n- **Divyangjan Hostel**: Specially designed rooms featuring wider doors, grab rails, and accessible washrooms.`,
-        hindi: `### दिव्यांगजन सुविधाएं और सुलभता (Accessibility):\n- **रैंप**: सभी शैक्षणिक ब्लॉकों, हॉस्टलों और पुस्तकालयों के प्रवेश द्वार पर रैंप स्थापित किए गए हैं ताकि व्हीलचेयर का आवागमन आसान हो सके।\n- **लिफ्ट**: ऊपरी मंजिलों पर कक्षाओं और लैब तक पहुंचने के लिए मुख्य शैक्षणिक भवन में लिफ्ट लगाई गई है।\n- **अनुकूलित कक्षाएं**: व्हीलचेयर सुलभ कमरे जो कम ऊंचाई वाले लेखन डेस्क से सुसज्जित हैं।\n- **दिव्यांगजन हॉस्टल**: चौड़े दरवाजे, ग्रैब रेल्स (grab rails) और सुलभ शौचालय वाले विशेष अनुकूलित कमरे।`
+        keywords: ['accessibility', 'amenity', 'amenities', 'ramp', 'ramps', 'lift', 'lifts', 'elevator', 'wheelchair', 'accessible', 'barrier-free', 'toilet', 'washroom', 'grab rails', 'tactile flooring'],
+        english: `### Accessibility & Amenities for Divyangjan:\n- **Ramps**: Installed at the entrance of all academic blocks, hostels (including Divyangjan Hostel), and libraries to ensure barrier-free movement.\n- **Lifts/Elevators**: Installed in the Main Academic Building to access upper floor classrooms (accessible via Main Building Lift).\n- **Accessible Classrooms**: Wheelchair-friendly rooms with low-height writing desks like the Divyangjan Classroom.\n- **Divyangjan Hostel**: Specially designed rooms featuring wider doors, grab rails, and accessible washrooms.`,
+        hindi: `### दिव्यांगजन सुविधाएं और सुलभता (Accessibility):\n- **रैंप**: सभी शैक्षणिक ब्लॉकों, पुस्तकालयों और Divyangjan Hostel के प्रवेश द्वार पर रैंप स्थापित किए गए हैं ताकि व्हीलचेयर का आवागमन आसान हो सके।\n- **लिफ्ट**: ऊपरी मंजिलों पर कक्षाओं और लैब तक पहुंचने के लिए Main Academic Building में Main Building Lift लगाई गई है।\n- **अनुकूलित कक्षाएं**: व्हीलचेयर सुलभ कमरे जो कम ऊंचाई वाले लेखन डेस्क से सुसज्जित हैं जैसे कि Divyangjan Classroom।\n- **दिव्यांगजन हॉस्टल (Divyangjan Hostel)**: चौड़े दरवाजे, ग्रैब रेल्स (grab rails) और सुलभ शौचालय वाले विशेष अनुकूलित कमरे।`
     },
     {
-        keywords: ['contact', 'phone', 'number', 'mobile', 'email', 'address', 'location', 'where', 'director', 'office', 'aith', 'aitd', 'call', 'website', 'director room', 'director\'s room', 'director office', 'director\'s office'],
-        english: `### Contact & Office Details:\n- **Address**: Awadhpuri (Opposite Rama Dental College), Kanpur, Uttar Pradesh, 208024.\n- **Phone Number**: 0512-2583221.\n- **Email**: director@aith.ac.in, info@aith.ac.in.\n- **Website**: aitd.ac.in (or aith.ac.in).\n- **Director's Office**: Located in the Main Academic Building.\n- **CSE/IT Department HOD**: Dr. Shrinath Dwivedi (Office located in F-Block).`,
-        hindi: `### संपर्क और कार्यालय विवरण:\n- **पता**: अवधपुरी (रामा डेंटल कॉलेज के सामने), कानपुर, उत्तर प्रदेश, 208024।\n- **फोन नंबर**: 0512-2583221।\n- **ईमेल**: director@aith.ac.in, info@aith.ac.in।\n- **वेबसाइट**: aitd.ac.in या aith.ac.in।\n- **निदेशक कार्यालय**: मुख्य शैक्षणिक भवन में स्थित है।\n- **CSE/IT विभाग के HOD**: डॉ. श्रीनाथ द्विवेदी (कार्यालय F-Block में स्थित है)।`
+        keywords: ['contact', 'phone number', 'mobile number', 'email id', 'email address', 'office address', 'director', 'aith', 'aitd', 'website', 'director room', 'director\'s room', 'director office', 'director\'s office'],
+        english: `### Contact & Office Details:\n- **Address**: Awadhpuri (Opposite Rama Dental College), Kanpur, Uttar Pradesh, 208024.\n- **Phone Number**: 0512-2583221.\n- **Email**: director@aith.ac.in, info@aith.ac.in.\n- **Website**: aitd.ac.in (or aith.ac.in).\n- **Director's Office**: Located in the Main Academic Building (Director's Office room).\n- **Administrative Block HODs**: Administrative Block HOD and director offices are located here.\n- **CSE/IT Department HOD**: Dr. Shrinath Dwivedi (Office located in F-Block (CSE & IT)).`,
+        hindi: `### संपर्क और कार्यालय विवरण:\n- **पता**: अवधपुरी (रामा डेंटल कॉलेज के सामने), कानपुर, उत्तर प्रदेश, 208024।\n- **फोन नंबर**: 0512-2583221।\n- **ईमेल**: director@aith.ac.in, info@aith.ac.in।\n- **वेबसाइट**: aitd.ac.in या aith.ac.in।\n- **निदेशक कार्यालय**: Main Academic Building में Director's Office (निदेशक कार्यालय) के रूप में स्थित है।\n- **प्रशासनिक कार्यालय**: Administrative Block में विभिन्न प्रशासनिक विभाग और डायरेक्टर ऑफिस हैं।\n- **CSE/IT विभाग HOD**: डॉ. श्रीनाथ द्विवेदी (कार्यालय F-Block (CSE & IT) में स्थित है)।`
     }
 ];
 
@@ -183,22 +183,31 @@ function getLocalFallbackResponse(query) {
         }
     }
 
-    // 2. Try Core Facts Matching first
-    for (const fact of localFacts) {
-        // Only match if one of the keywords is explicitly present as a word
-        const matched = fact.keywords.some(kw => containsWord(lowerQuery, kw));
-        if (matched) {
-            if (useHindi) {
-                return `AITD लोकल डेटाबेस के अनुसार:\n\n${fact.hindi}\n\nयदि आप ऊपर दी गई जानकारी से संबंधित किसी स्थान पर जाना चाहते हैं, तो नीचे दिए गए 'Find Route' बटन का उपयोग कर सकते हैं। 👇`;
-            } else {
-                return `According to AITD local database:\n\n${fact.english}\n\nIf you want to view the route to any location mentioned above, please use the 'Find Route' button below. 👇`;
+    // 2. Try Predefined Facts Matching first (skip for HOD/faculty specific queries to let RAG handle it)
+    const isFacultyQuery = containsWord(lowerQuery, 'hod') || 
+                           containsWord(lowerQuery, 'head') || 
+                           containsWord(lowerQuery, 'director') || 
+                           containsWord(lowerQuery, 'dean') ||
+                           containsWord(lowerQuery, 'coordinator') ||
+                           containsWord(lowerQuery, 'faculty') ||
+                           containsWord(lowerQuery, 'teacher') ||
+                           containsWord(lowerQuery, 'professor');
+
+    if (!isFacultyQuery) {
+        for (const fact of localFacts) {
+            const matched = fact.keywords.some(kw => containsWord(lowerQuery, kw));
+            if (matched) {
+                if (useHindi) {
+                    return `AITD लोकल डेटाबेस के अनुसार:\n\n${fact.hindi}\n\nयदि आप ऊपर दी गई जानकारी से संबंधित किसी स्थान पर जाना चाहते हैं, तो नीचे दिए गए 'Find Route' बटन का उपयोग कर सकते हैं। 👇`;
+                } else {
+                    return `According to AITD local database:\n\n${fact.english}\n\nIf you want to view the route to any location mentioned above, please use the 'Find Route' button below. 👇`;
+                }
             }
         }
     }
 
-    // 3. Fetch RAG matches
+    // 3. RAG/Knowledge Search
     const retrievedKnowledge = searchLocalKnowledge(query);
-    
     if (retrievedKnowledge) {
         let response = useHindi ? `AITD डेटाबेस के अनुसार:\n\n` : `According to the AITD database:\n\n`;
         
@@ -213,43 +222,53 @@ function getLocalFallbackResponse(query) {
             : `If you want to view the route to any location mentioned above, please use the 'Find Route' button below. 👇`;
         return response;
     }
-    
-    // 3. Match locations if not in RAG
+
+    // 4. Specific Location Match with tags support
     const locations = getLocationsContext();
     const matchedLocs = [];
+    const genericBlocklist = ['lab', 'room', 'gate', 'road', 'path', 'dept', 'department', 'block', 'hostel', 'campus', 'building', 'office', 'entrance', 'exit', 'sports', 'game', 'play', 'ground', 'court', 'auditorium', 'centre', 'stage', 'main', 'landmark', 'milestone'];
+
     for (const loc of locations) {
         const name = loc.name.toLowerCase();
         const disp = (loc.displayName || "").toLowerCase();
-        if (lowerQuery.includes(name) || (disp && lowerQuery.includes(disp))) {
+        
+        let isMatch = containsWord(lowerQuery, name) || (disp && containsWord(lowerQuery, disp));
+        
+        if (!isMatch && loc.description) {
+            const tags = loc.description.split(',').map(t => t.trim().toLowerCase());
+            for (const tag of tags) {
+                if (tag.length > 3 && !genericBlocklist.includes(tag) && containsWord(lowerQuery, tag)) {
+                    isMatch = true;
+                    break;
+                }
+            }
+        }
+        
+        if (isMatch) {
             matchedLocs.push(loc);
         }
     }
     
     if (matchedLocs.length > 0) {
+        const loc = matchedLocs[0];
         if (useHindi) {
-            let response = `AITD कैंपस में **${matchedLocs[0].displayName}** उपलब्ध है। `;
-            if (matchedLocs[0].category) {
-                response += `यह **${matchedLocs[0].category}** श्रेणी में आता है। `;
-            }
-            if (matchedLocs[0].description) {
-                response += `यह ${matchedLocs[0].description} से संबंधित है। `;
+            let response = `AITD कैंपस में **${loc.displayName}** उपलब्ध है। `;
+            if (loc.category) {
+                response += `यह **${loc.category}** श्रेणी में आता है। `;
             }
             response += `\n\nमैंने आपके नेविगेशन के लिए नीचे बटन जोड़ दिया है। आप उस पर क्लिक करके सीधा मार्ग देख सकते हैं!`;
             return response;
         } else {
-            let response = `**${matchedLocs[0].displayName}** is available on the AITD campus. `;
-            if (matchedLocs[0].category) {
-                response += `It belongs to the **${matchedLocs[0].category}** category. `;
-            }
-            if (matchedLocs[0].description) {
-                response += `It is associated with ${matchedLocs[0].description}. `;
+            let response = `**${loc.displayName}** is available on the AITD campus. `;
+            if (loc.category) {
+                response += `It belongs to the **${loc.category}** category. `;
             }
             response += `\n\nI have added a button below for your navigation. Click it to view the route!`;
             return response;
         }
     }
-    
-    // 4. Default Fallback response
+
+    // 5. Default Fallback response
     if (useHindi) {
         return `नमस्ते! मैं AITD कैंपस से जुड़ी जानकारी और दिव्यांग सहायता के लिए उपलब्ध हूँ। आपके प्रश्न के बारे में मुझे विशिष्ट विवरण नहीं मिला, लेकिन आप इनसे संबंधित कुछ भी पूछ सकते हैं:\n\n1. **AITD B.Tech Fees**: फीस संरचना, हॉस्टल फ़ीस।\n2. **Departments**: CSE, IT, Electronics, Chemical, Paint Tech आदि।\n3. **Divyangjan Features**: Ramps, Lifts, Scribe Rules, Divyangjan Hostel.\n4. **Contacts**: फ़ोन नंबर, ईमेल और पता।\n\nआप नीचे दिए गए मैप पर भी किसी भी स्थान का मार्ग देख सकते हैं!`;
     } else {
@@ -366,7 +385,8 @@ Keep responses direct and get straight to the point. Do not write long greeting 
             contents: formattedContents,
             config: {
                 maxOutputTokens: 2000,
-                systemInstruction: systemInstruction
+                systemInstruction: systemInstruction,
+                tools: [{ googleSearch: {} }]
             }
         });
 

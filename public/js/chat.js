@@ -11,6 +11,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const speechBtn = document.getElementById('speechBtn');
     const muteVoiceBtn = document.getElementById('muteVoiceBtn');
 
+    // Helper to check if a section contains a query word on word boundaries
+    function containsWord(text, word) {
+        const escapedWord = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        // Match word surrounded by non-alphanumeric (bilingual English + Devanagari) characters or string boundaries
+        const regex = new RegExp('(?:^|[^a-zA-Z0-9\\u0900-\\u097F])' + escapedWord + '(?:$|[^a-zA-Z0-9\\u0900-\\u097F])', 'i');
+        return regex.test(text);
+    }
+
     // --- State ---
     let chatHistory = [];
     let isVoiceMuted = localStorage.getItem('chatVoiceMuted') === 'true';
@@ -418,60 +426,81 @@ document.addEventListener('DOMContentLoaded', function() {
         const chips = [];
         const lowerText = text.toLowerCase();
         
-        // Generic tags blocklist to avoid matching general words like "lab" or "building"
-        const genericBlocklist = ['lab', 'room', 'gate', 'road', 'path', 'dept', 'department', 'block', 'hostel', 'campus', 'building', 'office', 'entrance', 'exit', 'sports', 'game', 'play', 'ground', 'court', 'auditorium', 'centre', 'stage', 'main'];
+        // Helper to construct a chip button DOM element
+        function makeChipButton(loc) {
+            const button = document.createElement('button');
+            button.className = 'question-chip'; // Reuse styling of question chips
+            button.style.fontSize = '0.75em';
+            button.style.padding = '4px 8px';
+            button.style.margin = '2px 0';
+            button.style.backgroundColor = 'rgba(99, 102, 241, 0.15)';
+            button.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+            button.style.color = '#e0e7ff';
+            button.style.display = 'inline-flex';
+            button.style.alignItems = 'center';
+            button.style.gap = '4px';
+            button.setAttribute('data-loc', loc.name);
+            button.innerHTML = `${loc.icon || '📍'} Find Route to ${loc.displayName || loc.name}`;
 
-        // Scan for matching locations in locations list
+            button.addEventListener('click', function() {
+                setDestinationOnMap(loc.displayName || loc.name);
+            });
+            return button;
+        }
+
+        // First Pass: Find explicit Name or Display Name matches in the text
+        const directMatches = [];
         locations.forEach(loc => {
             if (loc.isRouting) return; // Ignore pure routing intersection points
             
             const matchName = loc.name.toLowerCase();
             const matchDisplay = (loc.displayName || "").toLowerCase();
             
-            // Check if AI response mentions this location name or display name explicitly
-            let isMatch = lowerText.includes(matchName) || (matchDisplay && lowerText.includes(matchDisplay));
-            
-            // Stricter Tag Matching: only match specific, long tag words not on the blocklist
-            if (!isMatch && loc.tags) {
-                for (let tag of loc.tags) {
-                    const cleanTag = tag.toLowerCase().trim();
-                    if (cleanTag.length <= 3 || genericBlocklist.includes(cleanTag)) {
-                        continue; // Skip generic tags
-                    }
-                    if (lowerText.includes(cleanTag)) {
-                        isMatch = true;
-                        break;
-                    }
-                }
-            }
-
-            if (isMatch) {
-                // Ensure duplicate chips aren't created
-                if (chips.some(c => c.getAttribute('data-loc') === loc.name)) return;
-
-                const button = document.createElement('button');
-                button.className = 'question-chip'; // Reuse styling of question chips
-                button.style.fontSize = '0.75em';
-                button.style.padding = '4px 8px';
-                button.style.margin = '2px 0';
-                button.style.backgroundColor = 'rgba(99, 102, 241, 0.15)';
-                button.style.borderColor = 'rgba(99, 102, 241, 0.3)';
-                button.style.color = '#e0e7ff';
-                button.style.display = 'inline-flex';
-                button.style.alignItems = 'center';
-                button.style.gap = '4px';
-                button.setAttribute('data-loc', loc.name);
-                button.innerHTML = `${loc.icon || '📍'} Find Route to ${loc.displayName || loc.name}`;
-
-                button.addEventListener('click', function() {
-                    setDestinationOnMap(loc.displayName || loc.name);
-                });
-                
-                chips.push(button);
+            // Check if response contains the full location name or display name
+            const isDirectMatch = lowerText.includes(matchName) || (matchDisplay && lowerText.includes(matchDisplay));
+            if (isDirectMatch) {
+                directMatches.push(loc);
             }
         });
 
-        return chips.slice(0, 3); // Max 3 chips to prevent layout clutter
+        // Add direct matches to chips list first
+        directMatches.forEach(loc => {
+            if (chips.length >= 3) return;
+            if (chips.some(c => c.getAttribute('data-loc') === loc.name)) return;
+            chips.push(makeChipButton(loc));
+        });
+
+        // Second Pass: If under the limit (3 chips), search for tag matches using strict word boundaries
+        if (chips.length < 3) {
+            const genericBlocklist = ['lab', 'room', 'gate', 'road', 'path', 'dept', 'department', 'block', 'hostel', 'campus', 'building', 'office', 'entrance', 'exit', 'sports', 'game', 'play', 'ground', 'court', 'auditorium', 'centre', 'stage', 'main', 'landmark', 'milestone'];
+            
+            for (const loc of locations) {
+                if (chips.length >= 3) break;
+                if (loc.isRouting) continue;
+                if (directMatches.includes(loc)) continue;
+                if (chips.some(c => c.getAttribute('data-loc') === loc.name)) continue;
+
+                let isTagMatch = false;
+                if (loc.tags) {
+                    for (let tag of loc.tags) {
+                        const cleanTag = tag.toLowerCase().trim();
+                        if (cleanTag.length <= 3 || genericBlocklist.includes(cleanTag)) {
+                            continue; // Skip generic tags
+                        }
+                        if (containsWord(lowerText, cleanTag)) {
+                            isTagMatch = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (isTagMatch) {
+                    chips.push(makeChipButton(loc));
+                }
+            }
+        }
+
+        return chips;
     }
 
     // Set destination inputs and trigger routes
@@ -504,35 +533,32 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-
-    // --- Client-Side Fallback Engine for Offline / Unreachable Server Scenarios ---
-    
-    // Client-side facts database
+       // Client-side facts database
     const localFacts = [
         {
-            keywords: ['fee', 'fees', 'structure', 'charge', 'charges', 'hostel fee', 'mess', 'tuition', 'scholarship', 'scholarships', 'reimbursement', 'payment', 'paisa', 'rupay', 'rupee', 'rupees', 'kharch', 'kharcha', 'scholar', 'up scholarship', 'nsp'],
-            english: `### AITD B.Tech Fee Structure:\n- **Tuition Fees**: ₹65,000 per year.\n- **Development Fees**: ₹10,000 per year.\n- **Library & Lab Charges**: ₹5,000 per year.\n- **Other Institutional Fees**: ₹7,800 per year.\n- **Total Institutional Fees**: ₹87,800 per year (excluding hostel and examination fees).\n- **Hostel Fees**: ₹15,000 per year (lodging, electricity, basic water).\n- **Mess Charges**: Approx. ₹3,000 per month (cooperative mess expenses).\n- **Examination Fees**: ₹7,500 per year.\n- **Scholarships**: Reserved category and Divyangjan students can apply for the UP State Scholarship and National Scholarship Portal (NSP) for full reimbursement of fees (family income ≤ ₹2,00,000 per year).`,
-            hindi: `### AITD बी.टेक फीस संरचना:\n- **ट्यूशन फीस**: ₹65,000 प्रति वर्ष।\n- **विकास शुल्क**: ₹10,000 प्रति वर्ष।\n- **लाइब्रेरी और लैब शुल्क**: ₹5,000 प्रति वर्ष।\n- **अन्य संस्थागत शुल्क**: ₹7,800 प्रति वर्ष।\n- **कुल संस्थागत फीस**: ₹87,800 प्रति वर्ष (हॉस्टल और परीक्षा शुल्क को छोड़कर)।\n- **हॉस्टल फीस**: ₹15,000 प्रति वर्ष (आवास, बिजली, बुनियादी पानी)।\n- **मेस शुल्क**: लगभग ₹3,000 प्रति माह।\n- **परीक्षा शुल्क**: ₹7,500 प्रति वर्ष।\n- **छात्रवृत्ति (Scholarships)**: यूपी राज्य छात्रवृत्ति (UP Scholarship) और राष्ट्रीय छात्रवृत्ति पोर्टल (NSP) के तहत सभी पात्र दिव्यांग छात्रों को संस्थागत फीस की पूर्ण प्रतिपूर्ति (रिफंड) मिल सकती है (पारिवारिक वार्षिक आय ≤ ₹2,00,000 होनी चाहिए)।`
+            keywords: ['fee', 'fees', 'hostel fee', 'mess fee', 'tuition', 'scholarship', 'scholarships', 'reimbursement', 'up scholarship', 'nsp'],
+            english: `### AITD B.Tech Fee Structure:\n- **Tuition Fees**: ₹65,000 per year.\n- **Development Fees**: ₹10,000 per year.\n- **Library & Lab Charges**: ₹5,000 per year.\n- **Other Institutional Fees**: ₹7,800 per year.\n- **Total Institutional Fees**: ₹87,800 per year (excluding hostel and examination fees).\n- **Hostel Fees**: ₹15,000 per year (lodging, electricity, basic water).\n- **Mess Charges**: Approx. ₹3,000 per month (cooperative mess expenses).\n- **Examination Fees**: ₹7,500 per year.\n- **Scholarships**: Reserved category and Divyangjan students can apply for the UP State Scholarship and National Scholarship Portal (NSP) for full reimbursement of fees (family income ≤ ₹2,00,000 per year).\n- **Enquiries**: For fee payments and receipts, visit the Accountant Section in the Main Academic Building.`,
+            hindi: `### AITD बी.टेक फीस संरचना:\n- **ट्यूशन फीस**: ₹65,000 प्रति वर्ष।\n- **विकास शुल्क**: ₹10,000 प्रति वर्ष।\n- **लाइब्रेरी और लैब शुल्क**: ₹5,000 प्रति वर्ष।\n- **अन्य संस्थागत शुल्क**: ₹7,800 प्रति वर्ष।\n- **कुल संस्थागत फीस**: ₹87,800 प्रति वर्ष (हॉस्टल और परीक्षा शुल्क को छोड़कर)।\n- **हॉस्टल फीस**: ₹15,000 प्रति वर्ष (आवास, बिजली, बुनियादी पानी)।\n- **मेस शुल्क**: लगभग ₹3,000 प्रति माह।\n- **परीक्षा शुल्क**: ₹7,500 प्रति वर्ष।\n- **छात्रवृत्ति (Scholarships)**: यूपी राज्य छात्रवृत्ति (UP Scholarship) और राष्ट्रीय छात्रवृत्ति पोर्टल (NSP) के तहत सभी पात्र दिव्यांग छात्रों को संस्थागत फीस की पूर्ण प्रतिपूर्ति (रिफंड) मिल सकती है (पारिवारिक वार्षिक आय ≤ ₹2,00,000 होनी चाहिए)।\n- **पूछताछ**: फीस जमा करने या रसीद प्राप्त करने के लिए आप Main Academic Building में Accountant Section (लेखा विभाग) जा सकते हैं।`
         },
         {
-            keywords: ['department', 'departments', 'branch', 'branches', 'cse', 'it', 'computer science', 'electronics', 'chemical', 'biotech', 'biotechnology', 'paint', 'food', 'civil', 'mechanical', 'block', 'nba', 'accredited', 'accridited', 'seat', 'seats', 'resrvation'],
-            english: `### AITD B.Tech Departments & Admissions:\n1. **Computer Science & Engineering (CSE)** - Located in F-Block.\n2. **Information Technology (IT)** - Located in F-Block.\n3. **Electronics Engineering** - NBA Accredited.\n4. **Chemical Engineering** - Located in the Chemical & Biotech block.\n5. **Biotechnology** - Located near the chemical department.\n6. **Paint Technology** - Specialized branch.\n7. **Food Technology** - Specialized branch.\n8. **Civil Engineering**\n9. **Mechanical Engineering**\n\n*Note*: 60% of B.Tech seats are reserved specifically for physically challenged (Divyangjan) candidates. There are also specialized Diploma courses designed for disabled students.`,
-            hindi: `### AITD बी.टेक विभाग (Departments) और प्रवेश:\n1. **कंप्यूटर साइंस एंड इंजीनियरिंग (CSE)** - F-Block में स्थित है।\n2. **इन्फॉर्मेशन टेक्नोलॉजी (IT)** - F-Block में स्थित है।\n3. **इलेक्ट्रॉनिक्स इंजीनियरिंग** - NBA मान्यता प्राप्त।\n4. **केमिकल इंजीनियरिंग** - केमिकल और बायोटेक ब्लॉक में।\n5. **बायोटेक्नोलॉजी** - केमिकल विभाग के पास।\n6. **पेंट टेक्नोलॉजी** - विशिष्ट शाखा।\n7. **खाद्य प्रौद्योगिकी (Food Tech)** - विशिष्ट शाखा।\n8. **सिविल इंजीनियरिंग**\n9. **मैनेजमेंट/मैकेनिकल इंजीनियरिंग**\n\n*विशेष टिप्पणी*: बी.टेक की 60% सीटें विशेष रूप से दिव्यांग (physically challenged) उम्मीदवारों के लिए आरक्षित हैं। दिव्यांग छात्रों के लिए विशेष डिप्लोमा पाठ्यक्रम भी उपलब्ध हैं।`
+            keywords: ['department', 'departments', 'branch', 'branches', 'cse', 'it', 'computer science', 'electronics', 'chemical', 'biotech', 'biotechnology', 'paint technology', 'food technology', 'civil engineering', 'mechanical engineering'],
+            english: `### AITD B.Tech Departments & Admissions:\n1. **Computer Science & Engineering (CSE)** - HOD office located in F-Block (CSE & IT).\n2. **Information Technology (IT)** - HOD office located in F-Block (CSE & IT).\n3. **Electronics Engineering** - Located in the Electronics Dept (NBA Accredited).\n4. **Chemical Engineering** - Located in the Chemical & Biotech Dept block.\n5. **Biotechnology** - Located in the Chemical & Biotech Dept block.\n6. **Paint Technology** - Located in the Paint Technology Dept block.\n7. **Food Technology** - Located in the Food Technology Dept block.\n8. **Civil Engineering** - Located in the Civil Dept block.\n9. **Mechanical Engineering** - Workshops located in the Mechanical Lab and Central Workshop.\n\n*Note*: 60% of B.Tech seats are reserved specifically for physically challenged (Divyangjan) candidates in the Administrative Block admission cell. There are also specialized Diploma courses designed for disabled students.`,
+            hindi: `### AITD बी.टेक विभाग (Departments) और प्रवेश:\n1. **कंप्यूटर साइंस एंड इंजीनियरिंग (CSE)** - HOD कार्यालय F-Block (CSE & IT) में स्थित है।\n2. **इन्फॉर्मेशन टेक्नोलॉजी (IT)** - HOD कार्यालय F-Block (CSE & IT) में स्थित है।\n3. **इलेक्ट्रॉनिक्स इंजीनियरिंग** - Electronics Dept (NBA Accredited) में स्थित है।\n4. **केमिकल इंजीनियरिंग** - Chemical & Biotech Dept ब्लॉक में स्थित है।\n5. **बायोटेक्नोलॉजी** - Chemical & Biotech Dept ब्लॉक में स्थित है।\n6. **पेंट टेक्नोलॉजी** - Paint Technology Dept ब्लॉक में स्थित है।\n7. **खाद्य प्रौद्योगिकी (Food Tech)** - Food Technology Dept ब्लॉक में स्थित है।\n8. **सिविल इंजीनियरिंग** - Civil Dept ब्लॉक में स्थित है।\n9. **मैकेनिक इंजीनियरिंग** - कार्यशालाएं Mechanical Lab और Central Workshop में हैं।\n\n*विशेष टिप्पणी*: Administrative Block प्रवेश सेल में बी.टेक की 60% सीटें विशेष रूप से दिव्यांग (physically challenged) उम्मीदवारों के लिए आरक्षित हैं। दिव्यांगों के लिए विशेष डिप्लोमा पाठ्यक्रम भी उपलब्ध हैं।`
         },
         {
-            keywords: ['scribe', 'writer', 'reader', 'exam', 'exams', 'aktu', 'paper', 'helper', 'disability certificate', 'extra time', 'medical certificate', 'rules', 'rule', 'cmo'],
-            english: `### AITD Scribe/Writer Rules for Exams:\n1. **Eligibility**: Students with >40% writing limb disability, visual impairment, or temporary arm injuries are eligible to avail a scribe/reader during AKTU exams.\n2. **Qualification**: Scribe must be one academic grade lower than the candidate and from a different department/branch (e.g., a 1st year CSE student cannot write for a 2nd year CSE student, but can write for a 2nd year IT student).\n3. **Extra Time**: Candidates using a scribe get an **extra 20 minutes per hour** (e.g., 60 minutes extra for a 3-hour exam).\n4. **Procedure**: Submit an application to the Controller of Examinations (COE) along with a valid CMO Medical Disability Certificate and Scribe ID proof at least 7 days before exams start.`,
-            hindi: `### परीक्षाओं के लिए लेखक/स्क्राइब (Scribe) नियम:\n1. **पात्रता**: लिखने वाले अंगों में 40% से अधिक दिव्यांगता वाले छात्र, दृष्टिबाधित छात्र, या हाथ की अस्थायी चोट वाले छात्र परीक्षा में लेखक/स्क्राइब का लाभ ले सकते हैं।\n2. **योग्यता**: स्क्राइब उम्मीदवार से एक शैक्षणिक वर्ष नीचे होना चाहिए और एक ही विभाग/शाखा से नहीं होना चाहिए (जैसे, प्रथम वर्ष का छात्र द्वितीय वर्ष के छात्र के लिए लिख सकता है)।\n3. **अतिरिक्त समय**: स्क्राइब का उपयोग करने वाले उम्मीदवारों को परीक्षा अवधि के प्रति घंटे **20 मिनट का अतिरिक्त समय** मिलता है (जैसे, 3 घंटे की परीक्षा के लिए 60 मिनट अतिरिक्त)।\n4. **प्रक्रिया**: परीक्षा शुरू होने से कम से कम 7 दिन पहले मुख्य चिकित्सा अधिकारी (CMO) के दिव्यांगता प्रमाण पत्र और स्क्राइब के पहचान पत्र के साथ परीक्षा नियंत्रक (COE) को आवेदन जमा करें।`
+            keywords: ['scribe', 'writer', 'reader', 'aktu exam', 'aktu exams', 'exam writer', 'exam scribe', 'extra time', 'disability certificate', 'medical certificate', 'cmo certificate'],
+            english: `### AITD Scribe/Writer Rules for Exams:\n1. **Eligibility**: Students with >40% writing limb disability, visual impairment, or temporary arm injuries are eligible to avail a scribe/reader during AKTU exams.\n2. **Qualification**: Scribe must be one academic grade lower than the candidate and from a different department/branch (e.g., a 1st year CSE student cannot write for a 2nd year CSE student, but can write for a 2nd year IT student).\n3. **Extra Time**: Candidates using a scribe get an **extra 20 minutes per hour** (e.g., 60 minutes extra for a 3-hour exam).\n4. **Procedure**: Submit an application to the Controller of Examinations (COE) at the Administrative Block along with a valid CMO Medical Disability Certificate and Scribe ID proof at least 7 days before exams start.`,
+            hindi: `### परीक्षाओं के लिए लेखक/स्क्राइब (Scribe) नियम:\n1. **पात्रता**: लिखने वाले अंगों में 40% से अधिक दिव्यांगता वाले छात्र, दृष्टिबाधित छात्र, या हाथ की अस्थायी चोट वाले छात्र परीक्षा में लेखक/स्क्राइब का लाभ ले सकते हैं।\n2. **योग्यता**: स्क्राइब उम्मीदवार से एक शैक्षणिक वर्ष नीचे होना चाहिए और एक ही विभाग/शाखा से नहीं होना चाहिए (जैसे, प्रथम वर्ष का छात्र द्वितीय वर्ष के छात्र के लिए लिख सकता है)।\n3. **अतिरिक्त समय**: स्क्राइब का उपयोग करने वाले उम्मीदवारों को परीक्षा अवधि के प्रति घंटे **20 मिनट का अतिरिक्त समय** मिलता है (जैसे, 3 घंटे की परीक्षा के लिए 60 मिनट अतिरिक्त)।\n4. **प्रक्रिया**: परीक्षा शुरू होने से कम से कम 7 दिन पहले मुख्य चिकित्सा अधिकारी (CMO) के दिव्यांगता प्रमाण पत्र और स्क्राइब के पहचान पत्र के साथ Administrative Block में परीक्षा नियंत्रक (COE) को आवेदन जमा करें।`
         },
         {
-            keywords: ['accessibility', 'amenity', 'amenities', 'ramp', 'ramps', 'lift', 'lifts', 'elevator', 'wheelchair', 'accessible', 'barrier-free', 'facility', 'toilet', 'washroom', 'grab rails', 'tactile flooring'],
-            english: `### Accessibility & Amenities for Divyangjan:\n- **Ramps**: Installed at the entrance of all academic blocks, hostels, and libraries to ensure barrier-free movement.\n- **Lifts/Elevators**: Installed in the Main Academic Building to access upper floor classrooms and computer labs.\n- **Accessible Classrooms**: Wheelchair-friendly rooms with low-height writing desks.\n- **Divyangjan Hostel**: Specially designed rooms featuring wider doors, grab rails, and accessible washrooms.`,
-            hindi: `### दिव्यांगजन सुविधाएं और सुलभता (Accessibility):\n- **रैंप**: सभी शैक्षणिक ब्लॉकों, हॉस्टलों और पुस्तकालयों के प्रवेश द्वार पर रैंप स्थापित किए गए हैं ताकि व्हीलचेयर का आवागमन आसान हो सके।\n- **लिफ्ट**: ऊपरी मंजिलों पर कक्षाओं और लैब तक पहुंचने के लिए मुख्य शैक्षणिक भवन में लिफ्ट लगाई गई है।\n- **अनुकूलित कक्षाएं**: व्हीलचेयर सुलभ कमरे जो कम ऊंचाई वाले लेखन डेस्क से सुसज्जित हैं।\n- **दिव्यांगजन हॉस्टल**: चौड़े दरवाजे, ग्रैब रेल्स (grab rails) और सुलभ शौचालय वाले विशेष अनुकूलित कमरे।`
+            keywords: ['accessibility', 'amenity', 'amenities', 'ramp', 'ramps', 'lift', 'lifts', 'elevator', 'wheelchair', 'accessible', 'barrier-free', 'toilet', 'washroom', 'grab rails', 'tactile flooring'],
+            english: `### Accessibility & Amenities for Divyangjan:\n- **Ramps**: Installed at the entrance of all academic blocks, hostels (including Divyangjan Hostel), and libraries to ensure barrier-free movement.\n- **Lifts/Elevators**: Installed in the Main Academic Building to access upper floor classrooms (accessible via Main Building Lift).\n- **Accessible Classrooms**: Wheelchair-friendly rooms with low-height writing desks like the Divyangjan Classroom.\n- **Divyangjan Hostel**: Specially designed rooms featuring wider doors, grab rails, and accessible washrooms.`,
+            hindi: `### दिव्यांगजन सुविधाएं और सुलभता (Accessibility):\n- **रैंप**: सभी शैक्षणिक ब्लॉकों, पुस्तकालयों और Divyangjan Hostel के प्रवेश द्वार पर रैंप स्थापित किए गए हैं ताकि व्हीलचेयर का आवागमन आसान हो सके।\n- **लिफ्ट**: ऊपरी मंजिलों पर कक्षाओं और लैब तक पहुंचने के लिए Main Academic Building में Main Building Lift लगाई गई है।\n- **अनुकूलित कक्षाएं**: व्हीलचेयर सुलभ कमरे जो कम ऊंचाई वाले लेखन डेस्क से सुसज्जित हैं जैसे कि Divyangjan Classroom।\n- **दिव्यांगजन हॉस्टल (Divyangjan Hostel)**: चौड़े दरवाजे, ग्रैब रेल्स (grab rails) और सुलभ शौचालय वाले विशेष अनुकूलित कमरे।`
         },
         {
-            keywords: ['contact', 'phone', 'number', 'mobile', 'email', 'address', 'location', 'where', 'director', 'office', 'aith', 'aitd', 'call', 'website', 'director room', 'director\'s room', 'director office', 'director\'s office'],
-            english: `### Contact & Office Details:\n- **Address**: Awadhpuri (Opposite Rama Dental College), Kanpur, Uttar Pradesh, 208024.\n- **Phone Number**: 0512-2583221.\n- **Email**: director@aith.ac.in, info@aith.ac.in.\n- **Website**: aitd.ac.in (or aith.ac.in).\n- **Director's Office**: Located in the Main Academic Building.\n- **CSE/IT Department HOD**: Dr. Shrinath Dwivedi (Office located in F-Block).`,
-            hindi: `### संपर्क और कार्यालय विवरण:\n- **पता**: अवधपुरी (रामा डेंटल कॉलेज के सामने), कानपुर, उत्तर प्रदेश, 208024।\n- **फोन नंबर**: 0512-2583221।\n- **ईमेल**: director@aith.ac.in, info@aith.ac.in।\n- **वेबसाइट**: aitd.ac.in या aith.ac.in।\n- **निदेशक कार्यालय**: मुख्य शैक्षणिक भवन में स्थित है।\n- **CSE/IT विभाग के HOD**: डॉ. श्रीनाथ द्विवेदी (कार्यालय F-Block में स्थित है)।`
+            keywords: ['contact', 'phone number', 'mobile number', 'email id', 'email address', 'office address', 'director', 'aith', 'aitd', 'website', 'director room', 'director\'s room', 'director office', 'director\'s office'],
+            english: `### Contact & Office Details:\n- **Address**: Awadhpuri (Opposite Rama Dental College), Kanpur, Uttar Pradesh, 208024.\n- **Phone Number**: 0512-2583221.\n- **Email**: director@aith.ac.in, info@aith.ac.in.\n- **Website**: aitd.ac.in (or aith.ac.in).\n- **Director's Office**: Located in the Main Academic Building (Director's Office room).\n- **Administrative Block HODs**: Administrative Block HOD and director offices are located here.\n- **CSE/IT Department HOD**: Dr. Shrinath Dwivedi (Office located in F-Block (CSE & IT)).`,
+            hindi: `### संपर्क और कार्यालय विवरण:\n- **पता**: अवधपुरी (रामा डेंटल कॉलेज के सामने), कानपुर, उत्तर प्रदेश, 208024।\n- **फोन नंबर**: 0512-2583221।\n- **ईमेल**: director@aith.ac.in, info@aith.ac.in।\n- **वेबसाइट**: aitd.ac.in या aith.ac.in।\n- **निदेशक कार्यालय**: Main Academic Building में Director's Office (निदेशक कार्यालय) के रूप में स्थित है।\n- **प्रशासनिक कार्यालय**: Administrative Block में विभिन्न प्रशासनिक विभाग और डायरेक्टर ऑफिस हैं।\n- **CSE/IT विभाग HOD**: डॉ. श्रीनाथ द्विवेदी (कार्यालय F-Block (CSE & IT) में स्थित है)।`
         }
     ];
 
@@ -544,6 +570,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const words = text.toLowerCase().split(/\s+/);
         return words.some(w => hindiKeywords.includes(w));
     }
+
+
 
     function getClientFallbackResponse(query) {
         const lowerQuery = query.toLowerCase().trim();
@@ -559,25 +587,51 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // 2. Keyword Fact Match
-        for (const fact of localFacts) {
-            const matches = fact.keywords.some(kw => lowerQuery.includes(kw));
-            if (matches) {
-                let response = useHindi 
-                    ? `AITD लोकल डेटाबेस (सक्रिय ऑफ़लाइन सहायता) के अनुसार:\n\n${fact.hindi}\n\nयदि आप इस स्थान का मार्ग देखना चाहते हैं, तो नीचे दिए गए 'Find Route' बटन का उपयोग कर सकते हैं। 👇`
-                    : `According to AITD local database (Offline Assistance active):\n\n${fact.english}\n\nIf you want to find the route to this place, use the navigation button below. 👇`;
-                return response;
+        // 2. Keyword Fact Match using refined keywords list (skip for HOD/faculty specific queries to let RAG handle it)
+        const isFacultyQuery = containsWord(lowerQuery, 'hod') || 
+                               containsWord(lowerQuery, 'head') || 
+                               containsWord(lowerQuery, 'director') || 
+                               containsWord(lowerQuery, 'dean') ||
+                               containsWord(lowerQuery, 'coordinator') ||
+                               containsWord(lowerQuery, 'faculty') ||
+                               containsWord(lowerQuery, 'teacher') ||
+                               containsWord(lowerQuery, 'professor');
+
+        if (!isFacultyQuery) {
+            for (const fact of localFacts) {
+                const matches = fact.keywords.some(kw => containsWord(lowerQuery, kw));
+                if (matches) {
+                    let response = useHindi 
+                        ? `AITD लोकल डेटाबेस (सक्रिय ऑफ़लाइन सहायता) के अनुसार:\n\n${fact.hindi}\n\nयदि आप ऊपर दी गई जानकारी से संबंधित किसी स्थान पर जाना चाहते हैं, तो नीचे दिए गए 'Find Route' बटन का उपयोग कर सकते हैं। 👇`
+                        : `According to AITD local database (Offline Assistance active):\n\n${fact.english}\n\nIf you want to view the route to any location mentioned above, please use the 'Find Route' button below. 👇`;
+                    return response;
+                }
             }
         }
 
-        // 3. Location Match using global locations array
+        // 3. Location Match using global locations array with tag matching
         if (typeof locations !== 'undefined') {
             const matchedLocs = [];
+            const genericBlocklist = ['lab', 'room', 'gate', 'road', 'path', 'dept', 'department', 'block', 'hostel', 'campus', 'building', 'office', 'entrance', 'exit', 'sports', 'game', 'play', 'ground', 'court', 'auditorium', 'centre', 'stage', 'main', 'landmark', 'milestone'];
+
             for (const loc of locations) {
                 if (loc.isRouting) continue;
                 const name = loc.name.toLowerCase();
                 const disp = (loc.displayName || "").toLowerCase();
-                if (lowerQuery.includes(name) || (disp && lowerQuery.includes(disp))) {
+                
+                let isMatch = containsWord(lowerQuery, name) || (disp && containsWord(lowerQuery, disp));
+                
+                if (!isMatch && loc.tags) {
+                    for (let tag of loc.tags) {
+                        const cleanTag = tag.toLowerCase().trim();
+                        if (cleanTag.length > 3 && !genericBlocklist.includes(cleanTag) && containsWord(lowerQuery, cleanTag)) {
+                            isMatch = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (isMatch) {
                     matchedLocs.push(loc);
                 }
             }
