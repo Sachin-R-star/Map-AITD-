@@ -6,3 +6,6 @@ android/app/build/
 android/build/
 .gradle/
 local.properties
+dist
+backend/dist
+server_diff.txt
