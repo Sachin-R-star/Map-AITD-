@@ -23,9 +23,11 @@
     "@capacitor/core": "^8.4.1",
     "@google/genai": "^2.11.0",
     "@google/generative-ai": "^0.24.1",
+    "@xenova/transformers": "^2.17.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.6.1",
     "express": "^4.19.2",
-    "gh-pages": "^3.2.3"
+    "gh-pages": "^3.2.3",
+    "mongoose": "^9.9.1"
   }
 }

@@ -142,6 +142,16 @@ function isHindi(text) {
 // Local bilingual facts database for chatbot fallback
 const localFacts = [
     {
+        keywords: ['director', 'directors', 'director\'s name', 'director name', 'who is the director', 'head of institute', 'rachna', 'asthana', 'rachna asthana', 'prof rachna asthana'],
+        english: `### Director of AITD Kanpur:\n- **Director**: Prof. Rachna Asthana\n- **Director's Office**: Located in the Main Academic Building (Director's Office room).\n- **Email**: director@aith.ac.in\n- **Phone**: 0512-2583221.`,
+        hindi: `### AITD कानपुर के निदेशक:\n- **निदेशक**: प्रो. रचना अस्थाना\n- **निदेशक कार्यालय**: Main Academic Building (निदेशक कार्यालय) में स्थित है।\n- **ईमेल**: director@aith.ac.in\n- **फोन नंबर**: 0512-2583221।`
+    },
+    {
+        keywords: ['hod', 'hods', 'head of department', 'faculty', 'professor', 'professors', 'teacher', 'teachers', 'shrinath', 'dwivedi', 'shrinath dwivedi'],
+        english: `### AITD Department Heads (HODs) & Faculty:\n- **CSE & IT Department**: Dr. Shrinath Dwivedi (Office in F-Block)\n- **Electronics Engineering**: Prof. Rachna Asthana (Electronics Dept; also Director of the Institute)\n- **Chemical Engineering & Biotech**: Dr. Arun Kumar (Chemical & Biotech block)\n- **Paint Technology**: Dr. Pramod Kumar (Paint Tech Block)\n- **Food Technology**: Dr. IP Singh (Food Tech Block)`,
+        hindi: `### AITD विभागाध्यक्ष (HODs) और संकाय:\n- **कंप्यूटर साइंस (CSE) और आईटी (IT)**: डॉ. श्रीनाथ द्विवेदी (कार्यालय: F-Block)\n- **इलेक्ट्रॉनिक्स इंजीनियरिंग**: प्रो. रचना अस्थाना (इलेक्ट्रॉनिक्स विभाग; संस्थान के निदेशक भी)\n- **केमिकल और बायोटेक**: डॉ. अरुण कुमार (केमिकल और बायोटेक ब्लॉक)\n- **पेंट टेक्नोलॉजी**: डॉ. प्रमोद कुमार (पेंट टेक ब्लॉक)\n- **खाद्य प्रौद्योगिकी (Food Tech)**: डॉ. IP सिंह (खाद्य प्रौद्योगिकी ब्लॉक)`
+    },
+    {
         keywords: ['fee', 'fees', 'hostel fee', 'mess fee', 'tuition', 'scholarship', 'scholarships', 'reimbursement', 'up scholarship', 'nsp'],
         english: `### AITD B.Tech Fee Structure:\n- **Tuition Fees**: ₹65,000 per year.\n- **Development Fees**: ₹10,000 per year.\n- **Library & Lab Charges**: ₹5,000 per year.\n- **Other Institutional Fees**: ₹7,800 per year.\n- **Total Institutional Fees**: ₹87,800 per year (excluding hostel and examination fees).\n- **Hostel Fees**: ₹15,000 per year (lodging, electricity, basic water).\n- **Mess Charges**: Approx. ₹3,000 per month (cooperative mess expenses).\n- **Examination Fees**: ₹7,500 per year.\n- **Scholarships**: Reserved category and Divyangjan students can apply for the UP State Scholarship and National Scholarship Portal (NSP) for full reimbursement of fees (family income ≤ ₹2,00,000 per year).\n- **Enquiries**: For fee payments and receipts, visit the Accountant Section in the Main Academic Building.`,
         hindi: `### AITD बी.टेक फीस संरचना:\n- **ट्यूशन फीस**: ₹65,000 प्रति वर्ष।\n- **विकास शुल्क**: ₹10,000 प्रति वर्ष।\n- **लाइब्रेरी और लैब शुल्क**: ₹5,000 प्रति वर्ष।\n- **अन्य संस्थागत शुल्क**: ₹7,800 प्रति वर्ष।\n- **कुल संस्थागत फीस**: ₹87,800 प्रति वर्ष (हॉस्टल और परीक्षा शुल्क को छोड़कर)।\n- **हॉस्टल फीस**: ₹15,000 प्रति वर्ष (आवास, बिजली, बुनियादी पानी)।\n- **मेस शुल्क**: लगभग ₹3,000 प्रति माह।\n- **परीक्षा शुल्क**: ₹7,500 प्रति वर्ष।\n- **छात्रवृत्ति (Scholarships)**: यूपी राज्य छात्रवृत्ति (UP Scholarship) और राष्ट्रीय छात्रवृत्ति पोर्टल (NSP) के तहत सभी पात्र दिव्यांग छात्रों को संस्थागत फीस की पूर्ण प्रतिपूर्ति (रिफंड) मिल सकती है (पारिवारिक वार्षिक आय ≤ ₹2,00,000 होनी चाहिए)।\n- **पूछताछ**: फीस जमा करने या रसीद प्राप्त करने के लिए आप Main Academic Building में Accountant Section (लेखा विभाग) जा सकते हैं।`
@@ -162,9 +172,34 @@ const localFacts = [
         hindi: `### दिव्यांगजन सुविधाएं और सुलभता (Accessibility):\n- **रैंप**: सभी शैक्षणिक ब्लॉकों, पुस्तकालयों और Divyangjan Hostel के प्रवेश द्वार पर रैंप स्थापित किए गए हैं ताकि व्हीलचेयर का आवागमन आसान हो सके।\n- **लिफ्ट**: ऊपरी मंजिलों पर कक्षाओं और लैब तक पहुंचने के लिए Main Academic Building में Main Building Lift लगाई गई है।\n- **अनुकूलित कक्षाएं**: व्हीलचेयर सुलभ कमरे जो कम ऊंचाई वाले लेखन डेस्क से सुसज्जित हैं जैसे कि Divyangjan Classroom।\n- **दिव्यांगजन हॉस्टल (Divyangjan Hostel)**: चौड़े दरवाजे, ग्रैब रेल्स (grab rails) और सुलभ शौचालय वाले विशेष अनुकूलित कमरे।`
     },
     {
-        keywords: ['contact', 'phone number', 'mobile number', 'email id', 'email address', 'office address', 'director', 'aith', 'aitd', 'website', 'director room', 'director\'s room', 'director office', 'director\'s office'],
+        keywords: ['contact', 'phone number', 'mobile number', 'email id', 'email address', 'office address', 'aith', 'aitd', 'website'],
         english: `### Contact & Office Details:\n- **Address**: Awadhpuri (Opposite Rama Dental College), Kanpur, Uttar Pradesh, 208024.\n- **Phone Number**: 0512-2583221.\n- **Email**: director@aith.ac.in, info@aith.ac.in.\n- **Website**: aitd.ac.in (or aith.ac.in).\n- **Director's Office**: Located in the Main Academic Building (Director's Office room).\n- **Administrative Block HODs**: Administrative Block HOD and director offices are located here.\n- **CSE/IT Department HOD**: Dr. Shrinath Dwivedi (Office located in F-Block (CSE & IT)).`,
         hindi: `### संपर्क और कार्यालय विवरण:\n- **पता**: अवधपुरी (रामा डेंटल कॉलेज के सामने), कानपुर, उत्तर प्रदेश, 208024।\n- **फोन नंबर**: 0512-2583221।\n- **ईमेल**: director@aith.ac.in, info@aith.ac.in।\n- **वेबसाइट**: aitd.ac.in या aith.ac.in।\n- **निदेशक कार्यालय**: Main Academic Building में Director's Office (निदेशक कार्यालय) के रूप में स्थित है।\n- **प्रशासनिक कार्यालय**: Administrative Block में विभिन्न प्रशासनिक विभाग और डायरेक्टर ऑफिस हैं।\n- **CSE/IT विभाग HOD**: डॉ. श्रीनाथ द्विवेदी (कार्यालय F-Block (CSE & IT) में स्थित है)।`
+    },
+    {
+        keywords: ['placement', 'placements', 'placement cell', 'job', 'jobs', 'recruit', 'recruitment', 'recruiting', 'recruiters', 'package', 'salary', 'tpo', 'training', 'internship', 'internships', 'placement head', 'placement cell head', 'tpo name', 'tpo officer', 'kamani', 'rohit sharma', 'rohit kumar', 'p k kamani'],
+        english: `### AITD Placement Cell & TPO:\n- **Dean, Training & Placement Cell (Degree)**: Prof. P. K. Kamani (Email: pkk@aith.ac.in)\n- **Associate Dean, T&P (Degree)**: Dr. Rohit Sharma (Email: rohit@aith.ac.in)\n- **Associate Dean, T&P (Diploma)**: Mr. A. K. Agarwal (Email: akn@aith.ac.in)\n- **T&P Cell Phone**: +91-8005495164, Email: tpodeg@aith.ac.in\n- **Key Recruiters**: TCS, Wipro, Infosys, Tech Mahindra, HCL, Berger Paints, Kansai Nerolac.\n- **Location**: Located in the Main Academic/Administrative Block.\n- **Preparation**: Mock interviews, soft skill training, and industrial visits.`,
+        hindi: `### AITD प्लेसमेंट सेल और TPO:\n- **डीन, ट्रेनिंग एंड प्लेसमेंट सेल (डिग्री)**: प्रो. पी. के. कमानी (ईमेल: pkk@aith.ac.in)\n- **एसोसिएट डीन, T&P (डिग्री)**: डॉ. रोहित शर्मा (ईमेल: rohit@aith.ac.in)\n- **एसोसिएट डीन, T&P (डिप्लोमा)**: श्री ए. के. अग्रवाल (ईमेल: akn@aith.ac.in)\n- **T&P सेल फोन**: +91-8005495164, ईमेल: tpodeg@aith.ac.in\n- **प्रमुख नियोक्ता**: TCS, Wipro, Infosys, Tech Mahindra, HCL, Berger Paints, Kansai Nerolac.\n- **स्थान**: Main Academic/Administrative Block में स्थित है।\n- **तैयारी**: मॉक इंटरव्यू, सॉफ्ट स्किल ट्रेनिंग और औद्योगिक दौरे।`
+    },
+    {
+        keywords: ['admission', 'admissions', 'apply', 'counseling', 'jee', 'jee main', 'upcet', 'uptu', 'seat', 'seats', 'intake', 'eligibility'],
+        english: `### AITD Admissions & Seats:\n- **B.Tech Admissions**: Conducted based on JEE Main ranks through UPTAC (AKTU) counseling.\n- **Divyangjan Reservation**: 60% of total seats in B.Tech courses are reserved specifically for physically challenged (Divyangjan) candidates.\n- **Diploma Admissions**: Admission to Diploma courses is through JEECUP counseling.\n- **Enquiries**: Visit the Admission Cell in the Administrative Block.`,
+        hindi: `### AITD प्रवेश (Admissions) और सीटें:\n- **बी.टेक प्रवेश**: UPTAC (AKTU) काउंसलिंग के माध्यम से JEE Main रैंक के आधार पर किया जाता है।\n- **दिव्यांगजन आरक्षण**: बी.टेक पाठ्यक्रमों में कुल सीटों का 60% विशेष रूप से शारीरिक रूप से अक्षम (दिव्यांगजन) उम्मीदवारों के लिए आरक्षित है।\n- **डिप्लोमा प्रवेश**: डिप्लोमा पाठ्यक्रमों में प्रवेश JEECUP काउंसलिंग के माध्यम से होता है।\n- **पूछताछ**: Administrative Block में Admission Cell (प्रवेश कक्ष) पर जाएं।`
+    },
+    {
+        keywords: ['hostel', 'hostels', 'mess', 'canteen', 'food', 'stay', 'accommodation', 'room rent', 'laundry'],
+        english: `### Hostels & Canteen at AITD:\n- **Divyangjan Hostel**: Specially equipped hostel for disabled students with ramps, accessible toilets, and lower-height amenities.\n- **General Hostels**: Separate secure hostel blocks for boys and girls.\n- **Canteen**: The campus canteen offers hygienic food, snacks, and beverages at subsidized rates. Accessible via ramps.`,
+        hindi: `### AITD हॉस्टल और कैंटीन:\n- **दिव्यांगजन हॉस्टल**: रैंप, सुलभ शौचालय और कम ऊंचाई वाली सुविधाओं से लैस दिव्यांग छात्रों के लिए विशेष छात्रावास।\n- **सामान्य हॉस्टल**: लड़कों और लड़कियों के लिए अलग-अलग सुरक्षित छात्रावास ब्लॉक।\n- **कैंटीन**: कैंपस कैंटीन रियायती दरों पर स्वच्छ भोजन, स्नैक्स और पेय प्रदान करती है। यह रैंप के माध्यम से सुलभ है।`
+    },
+    {
+        keywords: ['library', 'book', 'books', 'journal', 'computer lab', 'computer center', 'internet', 'wifi'],
+        english: `### Library & Computer Facilities:\n- **Central Library**: Features a vast collection of text/reference books, journals, and a digital library section with e-learning resources. Ground floor is completely barrier-free.\n- **Computer Center**: High-speed internet enabled labs for academic programming and project work, located in the CSE & IT block.`,
+        hindi: `### लाइब्रेरी और कंप्यूटर सुविधाएं:\n- **केंद्रीय पुस्तकालय (Library)**: इसमें पाठ्यपुस्तकों/संदर्भ पुस्तकों, पत्रिकाओं और ई-लर्निंग संसाधनों वाले डिजिटल लाइब्रेरी अनुभाग का विशाल संग्रह है। भूतल पूरी तरह से बाधा मुक्त (barrier-free) है।\n- **कंप्यूटर केंद्र**: शैक्षणिक प्रोग्रामिंग और प्रोजेक्ट कार्य के लिए हाई-स्पीड इंटरनेट सक्षम लैब, जो CSE और IT ब्लॉक में स्थित हैं।`
+    },
+    {
+        keywords: ['ragging', 'anti-ragging', 'security', 'safe', 'safety', 'harassment', 'complaint', 'helpline'],
+        english: `### Anti-Ragging & Campus Safety:\n- **Zero Tolerance**: AITD Kanpur has a strict zero-tolerance policy against ragging.\n- **Anti-Ragging Committee**: Headed by senior faculty members; complaints can be filed at the Director's Office or online.\n- **CCTV & Guards**: 24/7 security personnel and CCTV surveillance across campus ensure safety.`,
+        hindi: `### एंटी-रैगिंग और सुरक्षा:\n- **सख्त नीति**: AITD कानपुर में रैगिंग के खिलाफ सख्त जीरो-टॉलरेंस नीति है।\n- **एंटी-रैगिंग समिति**: वरिष्ठ संकाय सदस्यों के नेतृत्व में गठित; शिकायतें निदेशक कार्यालय या ऑनलाइन दर्ज की जा सकती हैं।\n- **सीसीटीवी और सुरक्षा**: सुरक्षा सुनिश्चित करने के लिए 24/7 सुरक्षा कर्मी और पूरे परिसर में सीसीटीवी निगरानी उपलब्ध है।`
     }
 ];
 
@@ -183,15 +218,14 @@ function getLocalFallbackResponse(query) {
         }
     }
 
-    // 2. Try Predefined Facts Matching first (skip for HOD/faculty specific queries to let RAG handle it)
-    const isFacultyQuery = containsWord(lowerQuery, 'hod') || 
-                           containsWord(lowerQuery, 'head') || 
-                           containsWord(lowerQuery, 'director') || 
-                           containsWord(lowerQuery, 'dean') ||
-                           containsWord(lowerQuery, 'coordinator') ||
-                           containsWord(lowerQuery, 'faculty') ||
-                           containsWord(lowerQuery, 'teacher') ||
-                           containsWord(lowerQuery, 'professor');
+    // 2. Try Predefined Facts Matching first (skip for specific queries unless they are direct HOD/Director matches)
+    const isFacultyQuery = (containsWord(lowerQuery, 'dean') ||
+                            containsWord(lowerQuery, 'coordinator') ||
+                            containsWord(lowerQuery, 'faculty') ||
+                            containsWord(lowerQuery, 'teacher') ||
+                            containsWord(lowerQuery, 'professor')) &&
+                           !containsWord(lowerQuery, 'director') &&
+                           !containsWord(lowerQuery, 'hod');
 
     if (!isFacultyQuery) {
         for (const fact of localFacts) {
@@ -304,8 +338,9 @@ app.post('/api/chat', async (req, res) => {
         res.end();
     };
 
-    if (!genAI) {
-        console.log("[Chat Endpoint] genAI not configured. Using streaming local fallback.");
+    const hasGroq = !!process.env.GROQ_API_KEY;
+    if (!genAI && !hasGroq) {
+        console.log("[Chat Endpoint] Neither Gemini nor Groq configured. Using streaming local fallback.");
         return await streamFallback(message);
     }
 
@@ -358,52 +393,132 @@ You MUST detect the language of the user's query. If the user asks in Hindi or H
 #Execution Priority:
 1. If the query is outside the AITD/Divyangjan scope, trigger the Guardrail Decline phrase immediately.
 2. If the query is within scope, check the retrieved RAG context. If the answer is in the context, rely on it first.
-3. If the query is within scope but not in the local RAG context, use your general knowledge about AITD Kanpur and educational guidelines to provide a helpful answer. Do NOT decline.
+3. If the query is within scope but not in the local RAG context, you MUST use the googleSearch tool (Google Search grounding) to search online for real-time, updated details about AITD Kanpur/AITH (placements, placement cell, admission schedules, canteen, library, timing, news, etc.) and provide a helpful, comprehensive, and accurate answer based on the search results. Do NOT decline or state that you know nothing about it.
 
 Keep responses direct and get straight to the point. Do not write long greeting headers in every reply.
 `;
 
-        // Format history for new @google/genai SDK
-        const formattedContents = [];
+        // 1. Try Groq API first if configured
+        if (hasGroq) {
+            console.log("[Chat Endpoint] Attempting Groq Streaming...");
+            try {
+                const groqHistory = [];
+                for (const msg of (history || [])) {
+                    groqHistory.push({
+                        role: msg.role === 'user' ? 'user' : 'assistant',
+                        content: msg.text
+                    });
+                }
+                groqHistory.push({
+                    role: 'user',
+                    content: message
+                });
 
-        // Add history messages
-        for (const msg of (history || [])) {
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.3-70b-versatile',
+                        messages: [
+                            { role: 'system', content: systemInstruction },
+                            ...groqHistory
+                        ],
+                        max_tokens: 2000,
+                        stream: true
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Groq API Error: ${response.status} ${await response.text()}`);
+                }
+
+                if (!res.headersSent) {
+                    res.setHeader('Content-Type', 'text/event-stream');
+                    res.setHeader('Cache-Control', 'no-cache, no-transform');
+                    res.setHeader('Connection', 'keep-alive');
+                    res.setHeader('X-Accel-Buffering', 'no');
+                }
+
+                const decoder = new TextDecoder("utf-8");
+                let buffer = "";
+
+                for await (const chunk of response.body) {
+                    buffer += decoder.decode(chunk, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop();
+
+                    for (const line of lines) {
+                        const cleanLine = line.trim();
+                        if (!cleanLine) continue;
+                        if (cleanLine === 'data: [DONE]') continue;
+
+                        if (cleanLine.startsWith('data: ')) {
+                            try {
+                                const parsed = JSON.parse(cleanLine.substring(6));
+                                const chunkText = parsed.choices?.[0]?.delta?.content || "";
+                                if (chunkText) {
+                                    res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
+                                }
+                            } catch (e) {
+                                // ignore parse errors
+                            }
+                        }
+                    }
+                }
+
+                res.write("event: end\ndata: [DONE]\n\n");
+                return res.end();
+
+            } catch (groqError) {
+                console.error("Groq API Streaming Error:", groqError);
+                console.log("Falling back to Gemini API...");
+            }
+        }
+
+        // 2. Try Gemini API as fallback
+        if (genAI) {
+            console.log("[Chat Endpoint] Attempting Gemini Streaming...");
+            const formattedContents = [];
+            for (const msg of (history || [])) {
+                formattedContents.push({
+                    role: msg.role === 'user' ? 'user' : 'model',
+                    parts: [{ text: msg.text }]
+                });
+            }
             formattedContents.push({
-                role: msg.role === 'user' ? 'user' : 'model',
-                parts: [{ text: msg.text }]
+                role: 'user',
+                parts: [{ text: message }]
             });
+
+            const resultStream = await genAI.models.generateContentStream({
+                model: 'gemini-2.0-flash-lite',
+                contents: formattedContents,
+                config: {
+                    maxOutputTokens: 2000,
+                    systemInstruction: systemInstruction,
+                    tools: [{ googleSearch: {} }]
+                }
+            });
+
+            for await (const chunk of resultStream) {
+                const chunkText = chunk.text;
+                if (chunkText) {
+                    res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
+                }
+            }
+
+            res.write("event: end\ndata: [DONE]\n\n");
+            return res.end();
         }
 
-        // Add current user message
-        formattedContents.push({
-            role: 'user',
-            parts: [{ text: message }]
-        });
-
-        const resultStream = await genAI.models.generateContentStream({
-            model: 'gemini-2.0-flash-lite',
-            contents: formattedContents,
-            config: {
-                maxOutputTokens: 2000,
-                systemInstruction: systemInstruction,
-                tools: [{ googleSearch: {} }]
-            }
-        });
-
-        for await (const chunk of resultStream) {
-            const chunkText = chunk.text;
-            if (chunkText) {
-                // Send chunk formatted as SSE event data
-                res.write(`data: ${JSON.stringify({ text: chunkText })}\n\n`);
-            }
-        }
-
-        // Signal stream completion using standard SSE [DONE] message
-        res.write("event: end\ndata: [DONE]\n\n");
-        res.end();
+        // 3. Last fallback (local static) if neither API succeeded
+        await streamFallback(message);
 
     } catch (error) {
-        console.error("Gemini API Streaming Error:", error);
+        console.error("Model API Streaming Error:", error);
         console.log("Falling back to local fallback stream...");
         try {
             await streamFallback(message);

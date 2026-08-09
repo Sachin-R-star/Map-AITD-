@@ -1,5 +1,11 @@
 === AITD FACULTY & DEPARTMENT HEADS (HODs) ===
 
+- Director of the Institute:
+  * Name: Prof. Rachna Asthana
+  * Designation: Director (serving since 2018)
+  * Office Location: Director's Office, Main Academic Building
+  * Email: director@aith.ac.in
+
 - Computer Science & Engineering (CSE) & Information Technology (IT) Department:
   * HOD Name: Dr. Shrinath Dwivedi (डॉ. श्रीनाथ द्विवेदी).
   * Designation: Professor & Head of Department.
@@ -7,7 +13,7 @@
   * Description: Highly experienced, student-friendly professor who coordinates academic and accessibility support for disabled students in the computer departments.
 
 - Electronics Engineering Department:
-  * HOD Name: Dr. Rachna Asthana (or current head).
+  * HOD Name: Prof. Rachna Asthana (also serves as the Director of the Institute).
   * Office Location: Electronics Department building.
 
 - Chemical Engineering & Biotechnology Department:
