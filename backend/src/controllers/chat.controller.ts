@@ -144,7 +144,8 @@ export const handleChatQuery = async (
     res.end();
   };
 
-  const hasGroq = !!env.GROQ_API_KEY;
+  const groqApiKey = env.GROQ_API_KEY ? env.GROQ_API_KEY.replace(/['"]/g, '').trim() : '';
+  const hasGroq = !!groqApiKey;
   const genAI = RagService.getGenAI();
 
   if (!genAI && !hasGroq) {
@@ -173,10 +174,11 @@ You are specifically designed to address and solve issues for physically challen
 #Behavior Rule & Guardrails
 You MUST ONLY answer questions that are related to:
 - Assistance and support for disabled students (Divyangjan assistance)
-- College life, facilities, and departments of AITD Kanpur
+- College life, facilities, administration, and departments of AITD/AITH Kanpur
 - Student welfare and scholarship schemes
+- Personnel, staff, teachers, or faculty associated with AITD Kanpur (e.g., Technical Assistants, HODs, Directors, Ministers of technical education in UP). Any query containing "AITD", "Kanpur", "AITH", or reference to its people is considered completely IN-SCOPE.
 
-If the user asks any question outside of these topics (for example: politics, entertainment, coding/programming, history, general math, science, or general QA not related to AITD/Divyangjan), you MUST politely refuse and reply EXACTLY:
+If the user asks any question that is completely outside of these topics (for example: general politics, entertainment, coding/programming, history, general math, science, or general QA not related to AITD/Divyangjan), you MUST politely refuse and reply EXACTLY:
 “क्षमा करें 🙏, मैं केवल AITD Kanpur और दिव्यांग सहायता से जुड़ी जानकारी प्रदान करने के लिए प्रशिक्षित हूँ।”
 
 Do not add any other explanations or words when declining.
@@ -194,9 +196,9 @@ ${ragContextInstruction}
 You MUST detect the language of the user's query. If the user asks in Hindi or Hinglish, respond in Hindi (Devanagari script) or Hinglish as appropriate. If the user asks in English, respond in English. Always match the user's preferred language.
 
 #Execution Priority:
-1. If the query is outside the AITD/Divyangjan scope, trigger the Guardrail Decline phrase immediately.
+1. If the query is completely outside the AITD/Divyangjan scope, trigger the Guardrail Decline phrase immediately.
 2. If the query is within scope, check the retrieved RAG context. If the answer is in the context, rely on it first.
-3. If the query is within scope but not in the local RAG context, you MUST use the googleSearch tool (Google Search grounding) to search online for real-time, updated details about AITD Kanpur/AITH (placements, placement cell, admission schedules, canteen, library, timing, news, etc.) and provide a helpful, comprehensive, and accurate answer based on the search results. Do NOT decline or state that you know nothing about it.
+3. If the query is within scope but not in the local RAG context, use your pre-trained LLM knowledge to answer the question as accurately as possible. If Google Search grounding is available (via the googleSearch tool), you can use it, but if not (e.g. running on Groq), you MUST answer standardly using your training data. Do NOT decline or state that you know nothing about it.
 
 Keep responses direct and get straight to the point. Do not write long greeting headers in every reply.
 `;
@@ -222,7 +224,7 @@ Keep responses direct and get straight to the point. Do not write long greeting 
           {
             method: 'POST',
             headers: {
-              Authorization: `Bearer ${env.GROQ_API_KEY}`,
+              Authorization: `Bearer ${groqApiKey}`,
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
